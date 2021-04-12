@@ -1,6 +1,6 @@
 istio-operator:
   hub: dtr.dev.cray.com/cray
-  tag: 1.7.8-cray1
+  tag: 1.7.8-cray1-distroless
 
 kubectl:
   image:
