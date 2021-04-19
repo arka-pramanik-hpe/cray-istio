@@ -28,6 +28,8 @@ a few changes:
 2) Fixed issue in the upstream chart not actually using values for
   `gateways.*.externalIPs` in the gateway service.
 
+## Transfer encoding workaround
+
 Istio/envoy 1.5.4 and 1.6.13 have have a transfer encoding validation bug that
 breaks APIs that use 'chunked' encoding.  This is not yet fixed in 1.6.13, so
 this helm chart has a workaround that modifies a runtime setting by exec'ing
@@ -39,3 +41,11 @@ following from this chart:
 
   - files/modify_runtime.sh
   - templates/te-bug-workaround.yaml
+
+## tcp-stats-filter-1.6 memory leak
+
+Istio/envoy 1.6.13 has a bug where envoy leaks memory.
+The workaround is to have a CronJob that deletes the tcp-stats-filter-1.6.
+See https://github.com/istio/istio/issues/24720
+This is fixed in newer versions of istio (1.7+), so when we upgrade
+remove the workaround.
