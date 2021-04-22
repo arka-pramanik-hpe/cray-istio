@@ -36,7 +36,7 @@ spec:
         service.istio.io/canonical-revision: latest
         {{- end }}
       annotations:
-        {{- if .Values.global.meshConfig.enablePrometheusMerge }}
+        {{- if .Values.meshConfig.enablePrometheusMerge }}
         prometheus.io/port: "15090"
         prometheus.io/scrape: "true"
         prometheus.io/path: "/stats/prometheus"
@@ -72,7 +72,7 @@ spec:
             - /bin/sh
           args:
             - -c
-            - sysctl -w kernel.core_pattern=/var/lib/istio/core.proxy && ulimit -c unlimited
+            - sysctl -w kernel.core_pattern=/var/lib/istio/data/core.proxy && ulimit -c unlimited
           securityContext:
             runAsUser: 0
             runAsGroup: 0
@@ -93,8 +93,10 @@ spec:
             {{- range $key, $val := $gateway.ports }}
             - containerPort: {{ $val.targetPort | default $val.port }}
             {{- end }}
+            {{- if $.Values.global.meshExpansion.enabled }}
             {{- range $key, $val := $gateway.meshExpansionPorts }}
-            - containerPort: {{ $val.port }}
+            - containerPort: {{ $val.targetPort | default $val.port }}
+            {{- end }}
             {{- end }}
             - containerPort: 15090
               protocol: TCP
@@ -212,7 +214,7 @@ spec:
           - name: {{ $key }}
             value: {{ $val }}
           {{- end }}
-          {{- range $key, $value := .Values.global.meshConfig.defaultConfig.proxyMetadata }}
+          {{- range $key, $value := .Values.meshConfig.defaultConfig.proxyMetadata }}
           - name: {{ $key }}
             value: "{{ $value }}"
           {{- end }}
@@ -242,7 +244,7 @@ spec:
             mountPath: /var/run/secrets/tokens
             readOnly: true
 {{- end }}
-          - name: ingressgatewaysdsudspath
+          - name: gatewaysdsudspath
             mountPath: /var/run/ingress_gateway
           {{- if .Values.global.mountMtlsCerts }}
           # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
@@ -250,12 +252,21 @@ spec:
             mountPath: /etc/certs
             readOnly: true
           {{- end }}
+          - mountPath: /var/lib/istio/data
+            name: istio-data
           - name: podinfo
             mountPath: /etc/istio/pod
           {{- range $gateway.secretVolumes }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
             readOnly: true
+          {{- end }}
+          {{- range $gateway.configVolumes }}
+          {{- if .mountPath }}
+          - name: {{ .name }}
+            mountPath: {{ .mountPath | quote }}
+            readOnly: true
+          {{- end }}
           {{- end }}
 {{- if $gateway.additionalContainers }}
 {{ toYaml $gateway.additionalContainers | indent 8 }}
@@ -277,7 +288,9 @@ spec:
                 fieldPath: metadata.annotations
       - name: istio-envoy
         emptyDir: {}
-      - name: ingressgatewaysdsudspath
+      - name: gatewaysdsudspath
+        emptyDir: {}
+      - name: istio-data
         emptyDir: {}
 {{- if eq .Values.global.jwtPolicy "third-party-jwt" }}
       - name: istio-token

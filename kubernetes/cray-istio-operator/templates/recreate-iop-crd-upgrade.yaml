@@ -1,0 +1,65 @@
+{{- /*
+Copyright 2020-2021 Hewlett Packard Enterprise Development LP
+*/}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: recreate-iop-crd-upgrade
+  namespace: {{ index .Values "istio-operator" "operatorNamespace" }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: recreate-iop-crd-upgrade-role
+rules:
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["create", "get", "list"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: recreate-iop-crd-upgrade-role-binding
+subjects:
+- kind: ServiceAccount
+  name: recreate-iop-crd-upgrade
+  namespace: {{ index .Values "istio-operator" "operatorNamespace" }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: recreate-iop-crd-upgrade-role
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: recreate-iop-crd-upgrade
+  namespace: {{ index .Values "istio-operator" "operatorNamespace" }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    helm.sh/hook: post-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
+spec:
+  template:
+    metadata:
+      name: recreate-iop-crd-upgrade
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: recreate-iop-crd-upgrade
+      containers:
+        - name: wait
+          image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+          command:
+            - '/bin/sh'
+          args:
+            - '-c'
+            - |-
+              {{- include "cray-istio-operator.recreate-iop-crd-upgrade-script" . | nindent 14 }}

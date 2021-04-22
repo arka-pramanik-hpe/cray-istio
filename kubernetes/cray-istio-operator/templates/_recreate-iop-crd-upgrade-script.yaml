@@ -1,0 +1,18 @@
+{{- /*
+Copyright 2021 Hewlett Packard Enterprise Development LP
+*/ -}}
+{{ define "cray-istio-operator.recreate-iop-crd-upgrade-script" }}
+
+sleep 30  # Delay to give the istiooperators that upgrade from 1.6 deletes a chance to go away.
+
+if [[ "$(kubectl get crds | grep istiooperators.install.istio.io | wc -l)" != "1" ]]; then
+
+kubectl apply -f - <<EOF
+{{ .Files.Get "files/crd-operator.yaml" }}
+EOF
+
+fi
+
+while [[ "$(kubectl get crds | grep istiooperators.install.istio.io | wc -l)" != "1" ]]; do sleep 5; done
+
+{{ end }}
