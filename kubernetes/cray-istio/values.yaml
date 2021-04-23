@@ -105,7 +105,7 @@ global:
   hub: dtr.dev.cray.com/cray
 
   # Default tag for Istio images.
-  tag: 1.6.13-cray1-20210202183713_549528c5da
+  tag: 1.6.13-cray1
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -792,6 +792,9 @@ ingressgatewayhmn:
       - port: 80
         targetPort: 80
         name: http2
+      - port: 443
+        targetPort: 443
+        name: https
 
       serviceAnnotations:
         metallb.universe.tf/address-pool: hardware-management
