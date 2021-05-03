@@ -694,6 +694,16 @@ istio:
         operator: In
         values: istio-ingressgateway
         topologyKey: "kubernetes.io/hostname"
+      - key: app.kubernetes.io/name
+        operator: In
+        values: cray-smd
+        namespaces: [services]
+        topologyKey: "kubernetes.io/hostname"
+      - key: cluster-name
+        operator: In
+        values: cray-smd-postgres
+        namespaces: [services]
+        topologyKey: "kubernetes.io/hostname"
       ports:
       - port: 80
         name: http2
@@ -774,6 +784,16 @@ ingressgatewayhmn:
       - key: app
         operator: In
         values: istio-ingressgateway-hmn
+        topologyKey: "kubernetes.io/hostname"
+      - key: app.kubernetes.io/name
+        operator: In
+        values: cray-smd
+        namespaces: [services]
+        topologyKey: "kubernetes.io/hostname"
+      - key: cluster-name
+        operator: In
+        values: cray-smd-postgres
+        namespaces: [services]
         topologyKey: "kubernetes.io/hostname"
       resources:
         requests:

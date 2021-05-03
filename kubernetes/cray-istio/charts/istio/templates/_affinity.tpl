@@ -87,6 +87,10 @@
             - {{ $v | quote }}
             {{- end }}
             {{- end }}
+        {{- if $item.namespaces }}
+        namespaces:
+        {{ $item.namespaces | toYaml | indent 8 }}
+        {{- end }}
         topologyKey: {{ $item.topologyKey }}
       weight: 100
     {{- end }}
