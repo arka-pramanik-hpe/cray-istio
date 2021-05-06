@@ -773,6 +773,7 @@ istio:
 ingressgatewayhmn:
   gateways:
     istio-ingressgateway-hmn:
+      runAsRoot: true  # This is necessary because the ports below are 80 and 443.
       enabled: true
       labels:
         app: istio-ingressgateway-hmn
