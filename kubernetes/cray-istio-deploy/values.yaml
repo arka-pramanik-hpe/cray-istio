@@ -58,10 +58,6 @@ istio:
     security:
       enabled: false
 
-  grafana:
-    security:
-      enabled: false
-
   tracing:
     enabled: true
     provider: jaeger

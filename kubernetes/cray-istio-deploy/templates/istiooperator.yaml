@@ -21,8 +21,6 @@ spec:
       enabled: true
     tracing:
       enabled: true
-    grafana:
-      enabled: true
   values:
     global:
 {{ toYaml .Values.istio.global | indent 6 }}

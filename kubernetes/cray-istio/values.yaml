@@ -649,9 +649,6 @@ authn:
 prometheus:
   enabled: true
 
-grafana:
-  enabled: true
-
 tracing:
   enabled: true
 
