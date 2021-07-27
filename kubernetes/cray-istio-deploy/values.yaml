@@ -10,6 +10,10 @@ kubectl:
 pilot:
   hub: dtr.dev.cray.com/cray
   tag: 1.7.8-cray1-distroless
+  resources:
+    requests:
+      cpu:
+      memory:
 
 meshConfig:
   accessLogFile: /dev/stdout

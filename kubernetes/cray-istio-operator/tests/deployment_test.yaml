@@ -1,0 +1,14 @@
+suite: test deployment
+templates:
+  - charts/istio-operator/templates/deployment.yaml
+tests:
+  - it: should work
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: istio-operator$
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: dtr.dev.cray.com/cray/operator:1.7.8-cray1-distroless

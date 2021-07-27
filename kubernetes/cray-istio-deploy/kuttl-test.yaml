@@ -1,0 +1,10 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestSuite
+commands:
+- command: kubectl create ns istio-system
+- command: helm install --wait -f ../cray-istio-operator/tests/kuttl/values.yaml --namespace istio-system cray-istio-operator ../cray-istio-operator
+- command: helm install --wait -f ./tests/kuttl/values.yaml --namespace istio-system cray-istio-deploy .
+testDirs:
+- ./tests/kuttl
+startKIND: true
+kindNodeCache: true
