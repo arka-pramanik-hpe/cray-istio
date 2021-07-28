@@ -433,7 +433,7 @@ global:
   # will not be killed because of low priority class.
   # Refer to https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
   # for more detail.
-  priorityClassName: ""
+  priorityClassName: csm-high-priority-service
 
   # Use the Mesh Control Protocol (MCP) for configuring Mixer and Pilot. Requires an MCP source.
   useMCP: false
