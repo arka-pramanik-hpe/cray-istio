@@ -1,0 +1,16 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-ingressgateway
+  namespace: istio-system
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-ingressgateway-hmn
+  namespace: istio-system
+status:
+  readyReplicas: 1

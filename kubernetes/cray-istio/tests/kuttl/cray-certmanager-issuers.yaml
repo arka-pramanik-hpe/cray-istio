@@ -1,0 +1,8 @@
+#
+# used to patch issuers with dynamic service
+# account secret name
+#
+
+kubectl:
+  image:
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman

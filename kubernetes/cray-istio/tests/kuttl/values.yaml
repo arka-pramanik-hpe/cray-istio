@@ -1,0 +1,76 @@
+imagesHost: "arti.dev.cray.com"
+
+kubectl:
+  image:
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
+
+global:
+  hub: arti.dev.cray.com/csm-docker-stable-local
+  proxy:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
+
+  proxy_init:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
+
+  defaultResources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 128Mi
+
+istio:
+  gateways:
+    istio-ingressgateway:
+      autoscaleEnabled: true
+      autoscaleMin: 1
+      autoscaleMax: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+    istio-ingressgateway-customer-admin:
+      autoscaleEnabled: true
+      autoscaleMin: 1
+      autoscaleMax: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+    istio-ingressgateway-customer-user:
+      autoscaleEnabled: true
+      autoscaleMin: 1
+      autoscaleMax: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+
+ingressgatewayhmn:
+  gateways:
+    istio-ingressgateway-hmn:
+      autoscaleEnabled: true
+      autoscaleMin: 1
+      autoscaleMax: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
