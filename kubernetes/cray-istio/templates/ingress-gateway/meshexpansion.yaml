@@ -1,17 +1,14 @@
 {{- if .Values.global.meshExpansion.enabled }}
-{{ $root := . }}
-{{- range .Values.gateways }}
----
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: meshexpansion-gateway
-  namespace: {{ $root.Release.Namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    release: {{ $root.Release.Name }}
+    release: {{ .Release.Name }}
 spec:
   selector:
-    istio: {{ .selector | default "ingressgateway" }}
+    istio: ingressgateway
   servers:
     - port:
         number: 15012
@@ -31,9 +28,9 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: meshexpansion-vs-istiod
-  namespace: {{ $root.Release.Namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    release: {{ $root.Release.Name }}
+    release: {{ .Release.Name }}
 spec:
   hosts:
   - istiod.{{ .Values.global.istioNamespace }}.svc.{{ .Values.global.proxy.clusterDomain }}
@@ -51,20 +48,20 @@ spec:
     - port: 15017
     route:
     - destination:
-        host: istiod.{{ $root.Release.Namespace }}.svc.{{ .Values.global.proxy.clusterDomain }}
+        host: istiod.{{ .Release.Namespace }}.svc.{{ .Values.global.proxy.clusterDomain }}
         port:
           number: 443
-{{- end }}
 ---
+
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: meshexpansion-dr-istiod
-  namespace: {{ $root.Release.Namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    release: {{ $root.Release.Name }}
+    release: {{ .Release.Name }}
 spec:
-  host: istiod.{{ $root.Release.Namespace }}.svc.{{ .Values.global.proxy.clusterDomain }}
+  host: istiod.{{ .Release.Namespace }}.svc.{{ .Values.global.proxy.clusterDomain }}
   trafficPolicy:
     portLevelSettings:
     - port:

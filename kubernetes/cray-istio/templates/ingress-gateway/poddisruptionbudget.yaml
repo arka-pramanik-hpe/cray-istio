@@ -1,15 +1,14 @@
 {{- if .Values.global.defaultPodDisruptionBudget.enabled }}
-{{ $root := . }}
-{{- range .Values.gateways }}
+{{- range $name, $options:= .Values.gateways }}
 ---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .name }}
-  namespace: {{ .namespace | default $root.Release.Namespace }}
+  name: {{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
 {{ .labels | toYaml | trim | indent 4 }}
-    release: {{ $root.Release.Name }}
+    release: {{ $.Release.Name }}
 spec:
   minAvailable: 1
   selector:

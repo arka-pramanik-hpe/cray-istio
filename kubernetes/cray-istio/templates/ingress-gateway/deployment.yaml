@@ -1,42 +1,42 @@
 {{ $network := .Values.global.network }}
-{{- range .Values.gateways }}
+{{- range $name, $options := .Values.gateways }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .name }}
-  namespace: {{ .namespace | default $.Release.Namespace }}
+  name: {{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
-{{ .labels | toYaml | indent 4 }}
+{{ $options.labels | toYaml | indent 4 }}
     release: {{ $.Release.Name }}
 spec:
-{{- if not .autoscaleEnabled }}
-{{- if .replicaCount }}
-  replicas: {{ .replicaCount }}
+{{- if not $options.autoscaleEnabled }}
+{{- if $options.replicaCount }}
+  replicas: {{ $options.replicaCount }}
 {{- end }}
 {{- end }}
   selector:
     matchLabels:
-{{ .labels | toYaml | indent 6 }}
-  {{- if or .rollingMaxSurge .rollingMaxUnavailable }}
+{{ $options.labels | toYaml | indent 6 }}
+  {{- if or $options.rollingMaxSurge $options.rollingMaxUnavailable }}
   strategy:
     rollingUpdate:
-      {{- if .rollingMaxSurge }}
-      maxSurge: {{ .rollingMaxSurge }}
+      {{- if $options.rollingMaxSurge }}
+      maxSurge: {{ $options.rollingMaxSurge }}
       {{- end }}
-      {{- if .rollingMaxUnavailable }}
-      maxUnavailable: {{ .rollingMaxUnavailable }}
+      {{- if $options.rollingMaxUnavailable }}
+      maxUnavailable: {{ $options.rollingMaxUnavailable }}
       {{- end }}
   {{- end }}
   template:
     metadata:
       labels:
-{{ .labels | toYaml | indent 8 }}
+{{ $options.labels | toYaml | indent 8 }}
 {{- if eq $.Release.Namespace "istio-system"}}
         release: istio
         chart: gateways
 {{- end }}
-        service.istio.io/canonical-name: {{ .name }}
+        service.istio.io/canonical-name: {{ $name }}
         {{- if $.Values.revision }}
         service.istio.io/canonical-revision: {{ $.Values.revision }}
         {{- else}}
@@ -49,18 +49,18 @@ spec:
         prometheus.io/path: "/stats/prometheus"
         {{- end }}
         sidecar.istio.io/inject: "false"
-{{- if .podAnnotations }}
-{{ toYaml .podAnnotations | indent 8 }}
+{{- if $options.podAnnotations }}
+{{ toYaml $options.podAnnotations | indent 8 }}
 {{ end }}
     spec:
-{{- if not .runAsRoot }}
+{{- if not $options.runAsRoot }}
       securityContext:
         runAsUser: 1337
         runAsGroup: 1337
         runAsNonRoot: true
         fsGroup: 1337
 {{- end }}
-      serviceAccountName: {{ .name | }}-service-account
+      serviceAccountName: {{ $name }}-service-account
 {{- if $.Values.global.priorityClassName }}
       priorityClassName: "{{ $.Values.global.priorityClassName }}"
 {{- end }}
@@ -97,7 +97,7 @@ spec:
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
 {{- end }}
           ports:
-            {{- range $key, $val := .ports }}
+            {{- range $key, $val := $options.ports }}
             - containerPort: {{ $val.targetPort | default $val.port }}
             {{- end }}
             {{- if $.Values.global.meshExpansion.enabled }}
@@ -126,14 +126,14 @@ spec:
           - --log_as_json
         {{- end }}
           - --serviceCluster
-          - {{ .name | default "istio-ingressgateway-hmn" }}
+          - {{ $name }}
         {{- if $.Values.global.sts.servicePort }}
           - --stsPort={{ $.Values.global.sts.servicePort }}
         {{- end }}
         {{- if $.Values.global.trustDomain }}
           - --trust-domain={{ $.Values.global.trustDomain }}
         {{- end }}
-        {{- if not .runAsRoot }}
+        {{- if not $options.runAsRoot }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -153,8 +153,8 @@ spec:
             successThreshold: 1
             timeoutSeconds: 1
           resources:
-{{- if .resources }}
-{{ toYaml .resources | indent 12 }}
+{{- if $options.resources }}
+{{ toYaml $options.resources | indent 12 }}
 {{- else }}
 {{ toYaml $.Values.global.defaultResources | indent 12 }}
 {{- end }}
@@ -207,9 +207,9 @@ spec:
               fieldRef:
                 fieldPath: metadata.labels['service.istio.io/canonical-revision']
           - name: ISTIO_META_WORKLOAD_NAME
-            value: {{ .name | }}
+            value: {{ $name }}
           - name: ISTIO_META_OWNER
-            value: kubernetes://apis/apps/v1/namespaces/{{ $.Release.Namespace }}/deployments/{{ .name }}
+            value: kubernetes://apis/apps/v1/namespaces/{{ $.Release.Namespace }}/deployments/{{ $name }}
           {{- if $.Values.global.meshID }}
           - name: ISTIO_META_MESH_ID
             value: "{{ $.Values.global.meshID }}"
@@ -217,7 +217,7 @@ spec:
           - name: ISTIO_META_MESH_ID
             value: "{{ $.Values.global.trustDomain }}"
           {{- end }}
-          {{- range $key, $val := .env }}
+          {{- range $key, $val := $options.env }}
           - name: {{ $key }}
             value: {{ $val }}
           {{- end }}
@@ -225,15 +225,15 @@ spec:
           - name: {{ $key }}
             value: "{{ $value }}"
           {{- end }}
-          {{ $network_set := index .env "ISTIO_META_NETWORK" }}
+          {{ $network_set := index $options.env "ISTIO_META_NETWORK" }}
           {{- if and (not $network_set) $.Values.global.network }}
           - name: ISTIO_META_NETWORK
             value: {{ $.Values.global.network }}
           {{- end }}
-{{- if .podAnnotations }}
+{{- if $options.podAnnotations }}
           - name: "ISTIO_METAJSON_ANNOTATIONS"
             value: |
-{{ toJson .podAnnotations | indent 16}}
+{{ toJson $options.podAnnotations | indent 16}}
 {{ end }}
           - name: ISTIO_META_CLUSTER_ID
             value: "{{ $.Values.global.multiCluster.clusterName | default `Kubernetes` }}"
@@ -263,15 +263,15 @@ spec:
             name: istio-data
           - name: podinfo
             mountPath: /etc/istio/pod
-          {{- if .secretVolumesPath }}
-          {{- range .secretVolumes }}
+          {{- if $options.secretVolumes }}
+          {{- range $options.secretVolumes }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
             readOnly: true
           {{- end }}
           {{- end }}
-          {{- if.configVolumes }}
-          {{- range .configVolumes }}
+          {{- if $options.configVolumes }}
+          {{- range $options.configVolumes }}
           {{- if .mountPath }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
@@ -279,8 +279,8 @@ spec:
           {{- end }}
           {{- end }}
           {{- end }}
-{{- if .additionalContainers }}
-{{ toYaml .additionalContainers | indent 8 }}
+{{- if $options.additionalContainers }}
+{{ toYaml $options.additionalContainers | indent 8 }}
 {{- end }}
       volumes:
 {{- if eq $.Values.global.pilotCertProvider "istiod" }}
@@ -323,16 +323,16 @@ spec:
         configMap:
           name: istio{{- if $.Values.revision }}-{{ $.Values.revision }}{{- end }}
           optional: true
-      {{- if .secretVolumes }}
-      {{- range .secretVolumes }}
+      {{- if $options.secretVolumes }}
+      {{- range $options.secretVolumes }}
       - name: {{ .name }}
         secret:
           secretName: {{ .secretName | quote }}
           optional: true
       {{- end }}
       {{- end }}
-      {{- if .configVolumes }}
-      {{- range .configVolumes }}
+      {{- if $options.configVolumes }}
+      {{- range $options.configVolumes }}
       - name: {{ .name }}
         configMap:
           name: {{ .configMapName | quote }}
@@ -340,44 +340,50 @@ spec:
       {{- end }}
       {{- end }}
       affinity:
-      {{- include "nodeaffinity" (dict "global" $.Values.global "nodeSelector" .nodeSelector) | indent 6 }}
-        {{- if .podAntiAffinityTerm }}
+      {{- include "nodeaffinity" (dict "global" $.Values.global "nodeSelector" $options.nodeSelector) | indent 6 }}
+        {{- if $options.podAffinityTerm }}
         podAntiAffinity:
-          podAffinityTerm:
-            preferredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            {{- range $k, $v := $options.podAffinityTerm }}
+            - podAffinityTerm:
+                topologyKey: {{ $v.topologyKey | default "kubernetes.io/hostname" }}
+                labelSelector:
+                  matchExpressions:
+                    - key: {{ $v.key }}
+                      operator: {{ $v.operator }}
+                      values:
+                        {{- $vals := split "," $v.values }}
+                        {{- range $i, $v := $vals }}
+                        - {{ $v | quote }}
+                        {{- end }}
+                {{- if $v.namespaces }}
+                namespaces: {{ $v.namespaces }}
+                {{- end }}
+              weight: {{ $v.weight | default 100 }}
+                    {{- end }}
+            {{- end }}
+        {{- if $options.podAntiAffinity }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
                 matchExpressions:
-                  {{- range $k, $v := .podAffinityTerm }}
+                  {{- range $k, $v := $options.podAntiAffinity }}
                   - key: {{ $v.key }}
                     operator: {{ $v.operator }}
                     values:
                       {{- $vals := split "," $v.values }}
-                      {{- range $i, $v := $vals }}
-                      - {{ $v | quote }}
+                      {{- range $i, $item := $vals }}
+                      - {{ $item | quote }}
                       {{- end }}
                     topologyKey: {{ $v.topologyKey | default "kubernetes.io/hostname" }}
-                  {{- end }}
-                {{- end }}
-
-        {{- if .podAntiAffinity }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-              matchExpressions:
-                {{- range $k, $v := .podAntiAffinity }}
-                - key: {{ $v.key }}
-                  operator: {{ $v.operator }}
-                  values:
-                    {{- $vals := split "," $v.values }}
-                    {{- range $i, $item := $vals }}
-                    - {{ $item | quote }}
-                    {{- end }}
-                  topologyKey: {{ $v.topologyKey | default "kubernetes.io/hostname" }}
+              {{- if $v.namespaces }}
+              namespaces: {{ $v.namespaces }}
+              {{- end }}
                 {{- end }}
         {{- end }}
-{{- if .tolerations }}
+{{- if $options.tolerations }}
       tolerations:
-{{ toYaml .tolerations | indent 6 }}
+{{ toYaml $options.tolerations | indent 6 }}
 {{- else if $.Values.global.defaultTolerations }}
       tolerations:
 {{ toYaml $.Values.global.defaultTolerations | indent 6 }}

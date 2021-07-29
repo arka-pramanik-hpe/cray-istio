@@ -1,18 +1,17 @@
-{{ $root := . }}
-{{- range .Values.gateways }}
+{{- range $name, $options:= .Values.gateways }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ .name }}-sds
-  namespace: {{ .namespace | default $root.Release.Namespace }}
+  name: {{ $name }}-sds
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
-    release: {{ $root.Release.Name }}
+    release: {{ $.Release.Name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ .name }}-sds
+  name: {{ $name }}-sds
 subjects:
 - kind: ServiceAccount
-  name: {{ .name }}-service-account
+  name: {{ $name }}-service-account
 {{- end }}

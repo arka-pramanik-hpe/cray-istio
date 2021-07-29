@@ -29,211 +29,43 @@ global:
     limits:
       memory: 128Mi
 
+  meshConfig:
+    enablePrometheusMerge: true
+
 gateways:
-  - name: istio-ingressgateway
-    labels:
-      app: istio-ingressgateway
-      istio: istio-ingressgateway
-    runAsRoot: true  # This is necessary because the ports below are 80 and 443.
-    enabled: true
-    type: LoadBalancer
-    autoscaleEnabled: true
-    autoscaleMin: 1
-    autoscaleMax: 1
-    externalTrafficPolicy: "Cluster"
-    localExternalTrafficPolicy: "Local"
+  istio-ingressgateway:
+    autoscaleEnabled: ""
+    replicaCount: 1
     resources:
       requests:
         cpu: 100m
         memory: 128Mi
       limits:
         memory: 128Mi
-    cpu:
-      targetAverageUtilization: 80
-    applicationPorts: "80"
-    podAffinityTerm:
-    - key: app
-      operator: In
-      values: istio-ingressgateway
-      topologyKey: "kubernetes.io/hostname"
-    - key: app.kubernetes.io/name
-      operator: In
-      values: cray-smd
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    - key: cluster-name
-      operator: In
-      values: cray-smd-postgres
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    ports:
-    - port: 80
-      name: http2
-    - port: 443
-      name: https
-    - port: 8081
-      name: tls-spire
-    - port: 8888
-      name: cloudinit
-    serviceAnnotations:
-      metallb.universe.tf/address-pool: hardware-management
-      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
-    env:
-      ISTIO_META_IDLE_TIMEOUT: 10m
-    chart: gateways
-    customService: true
-    extraServiceLabels:
-      peerauthentication: ingressgateway
-  - name: istio-ingressgateway-chn
-    runAsRoot: true  # This is necessary because the ports below are 80 and 443.
-    enabled: true
-    labels:
-      app: istio-ingressgateway-chn
-      istio: istio-ingressgateway-chn
-    autoscaleEnabled: true
-    autoscaleMin: 1
-    autoscaleMax: 1
+  istio-ingressgateway-chn:
+    autoscaleEnabled: ""
+    replicaCount: 1
     resources:
       requests:
         cpu: 100m
         memory: 128Mi
       limits:
         memory: 128Mi
-    ports:
-    - port: 80
-      name: http2
-    - port: 443
-      name: https
-    - port: 8081
-      name: tls-spire
-    - port: 8888
-      name: cloudinit
-    podAffinityTerm:
-    - key: app
-      operator: In
-      values: istio-ingressgateway-chn
-      topologyKey: "kubernetes.io/hostname"
-    - key: app.kubernetes.io/name
-      operator: In
-      values: cray-smd
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    - key: cluster-name
-      operator: In
-      values: cray-smd-postgres
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    serviceAnnotations:
-      metallb.universe.tf/address-pool: customer-access
-      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
-    cpu:
-      targetAverageUtilization: 80
-    env:
-      ISTIO_META_ROUTER_MODE: "sni-dnat"
-      ISTIO_META_IDLE_TIMEOUT: 10m
-  - name: istio-ingressgateway-cmn
-    runAsRoot: true  # This is necessary because the ports below are 80 and 443.
-    enabled: true
-    labels:
-      app: istio-ingressgateway-cmn
-      istio: istio-ingressgateway-cmn
-    autoscaleEnabled: true
-    autoscaleMin: 1
-    autoscaleMax: 1
+  istio-ingressgateway-cmn:
+    autoscaleEnabled: ""
+    replicaCount: 1
     resources:
       requests:
         cpu: 100m
         memory: 128Mi
       limits:
         memory: 128Mi
-    podAffinityTerm:
-    - key: app
-      operator: In
-      values: istio-ingressgateway-cmn
-      topologyKey: "kubernetes.io/hostname"
-    - key: app.kubernetes.io/name
-      operator: In
-      values: cray-smd
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    - key: cluster-name
-      operator: In
-      values: cray-smd-postgres
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    ports:
-    - port: 80
-      name: http2
-    - port: 443
-      name: https
-    - port: 8081
-      name: tls-spire
-    - port: 8888
-      name: cloudinit
-    serviceAnnotations:
-      metallb.universe.tf/address-pool: hardware-management
-      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
-    cpu:
-      targetAverageUtilization: 80
-    env:
-      ISTIO_META_ROUTER_MODE: "sni-dnat"
-      ISTIO_META_IDLE_TIMEOUT: 10m
-  - name: istio-ingressgateway-hmn
-    runAsRoot: true  # This is necessary because the ports below are 80 and 443.
-    enabled: true
-    labels:
-      app: istio-ingressgateway-hmn
-      istio: istio-ingressgateway-hmn
-    autoscaleEnabled: true
-    autoscaleMin: 1
-    autoscaleMax: 1
+  istio-ingressgateway-hmn:
+    autoscaleEnabled: ""
+    replicaCount: 1
     resources:
       requests:
         cpu: 100m
         memory: 128Mi
       limits:
         memory: 128Mi
-    podAffinityTerm:
-    - key: app
-      operator: In
-      values: istio-ingressgateway-hmn
-      topologyKey: "kubernetes.io/hostname"
-    - key: app.kubernetes.io/name
-      operator: In
-      values: cray-smd
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    - key: cluster-name
-      operator: In
-      values: cray-smd-postgres
-      namespaces: [services]
-      topologyKey: "kubernetes.io/hostname"
-    cpu:
-      targetAverageUtilization: 80
-    customService: true
-    extraServiceLabels:
-      peerauthentication: ingressgateway
-    type: LoadBalancer
-    ports:
-    - port: 80
-      targetPort: 80
-      name: http2
-    - port: 443
-      targetPort: 443
-      name: https
-    serviceAnnotations:
-      metallb.universe.tf/address-pool: hardware-management
-      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
-    loadBalancerIP: ""
-    meshExpansionPorts: []
-    secretVolumes:
-    - name: ingressgateway-certs
-      secretName: istio-ingressgateway-certs
-      mountPath: /etc/istio/ingressgateway-certs
-    - name: ingressgateway-ca-certs
-      secretName: istio-ingressgateway-ca-certs
-      mountPath: /etc/istio/ingressgateway-ca-certs
-    applicationPorts: "80"
-    env:
-      ISTIO_META_ROUTER_MODE: "sni-dnat"
-      ISTIO_META_IDLE_TIMEOUT: 10m

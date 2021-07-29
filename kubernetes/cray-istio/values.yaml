@@ -13,10 +13,10 @@ certificate:
   secretName: ingress-gateway-cert
 
 gateways:
-  - name: istio-ingressgateway
+  istio-ingressgateway:
     labels:
       app: istio-ingressgateway
-      istio: istio-ingressgateway
+      istio: ingressgateway
     runAsRoot: true  # This is necessary because the ports below are 80 and 443.
     enabled: true
     type: LoadBalancer
@@ -25,6 +25,8 @@ gateways:
     autoscaleMax: 6
     externalTrafficPolicy: "Cluster"
     localExternalTrafficPolicy: "Local"
+    rollingMaxSurge: 100%
+    rollingMaxUnavailable: 25%
     resources:
       requests:
         cpu: 500m
@@ -64,19 +66,29 @@ gateways:
       external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     env:
       ISTIO_META_IDLE_TIMEOUT: 10m
+      ISTIO_META_ROUTER_MODE: sni-dnat
     chart: gateways
     customService: true
     extraServiceLabels:
       peerauthentication: ingressgateway
-  - name: istio-ingressgateway-chn
+    secretVolumes:
+    - name: ingressgateway-certs
+      secretName: istio-ingressgateway-certs
+      mountPath: /etc/istio/ingressgateway-certs
+    - name: ingressgateway-ca-certs
+      secretName: istio-ingressgateway-ca-certs
+      mountPath: /etc/istio/ingressgateway-ca-certs
+  istio-ingressgateway-chn:
     runAsRoot: true  # This is necessary because the ports below are 80 and 443.
     enabled: true
     labels:
       app: istio-ingressgateway-chn
-      istio: istio-ingressgateway-chn
+      istio: ingressgateway-chn
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
+    rollingMaxSurge: 100%
+    rollingMaxUnavailable: 25%
     resources:
       requests:
         cpu: 300m
@@ -89,10 +101,6 @@ gateways:
       name: http2
     - port: 443
       name: https
-    - port: 8081
-      name: tls-spire
-    - port: 8888
-      name: cloudinit
     podAffinityTerm:
     - key: app
       operator: In
@@ -116,12 +124,19 @@ gateways:
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
-  - name: istio-ingressgateway-cmn
+    secretVolumes:
+    - name: ingressgateway-certs
+      secretName: istio-ingressgateway-certs
+      mountPath: /etc/istio/ingressgateway-certs
+    - name: ingressgateway-ca-certs
+      secretName: istio-ingressgateway-ca-certs
+      mountPath: /etc/istio/ingressgateway-ca-certs
+  istio-ingressgateway-cmn:
     runAsRoot: true  # This is necessary because the ports below are 80 and 443.
     enabled: true
     labels:
       app: istio-ingressgateway-cmn
-      istio: istio-ingressgateway-cmn
+      istio: ingressgateway-cmn
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
@@ -140,6 +155,8 @@ gateways:
       values: cray-smd-postgres
       namespaces: [services]
       topologyKey: "kubernetes.io/hostname"
+    rollingMaxSurge: 100%
+    rollingMaxUnavailable: 25%
     resources:
       requests:
         cpu: 300m
@@ -152,27 +169,31 @@ gateways:
       name: http2
     - port: 443
       name: https
-    - port: 8081
-      name: tls-spire
     - port: 8888
       name: cloudinit
-    serviceAnnotations:
-      metallb.universe.tf/address-pool: hardware-management
-      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     cpu:
       targetAverageUtilization: 80
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
-  - name: istio-ingressgateway-hmn
+    secretVolumes:
+    - name: ingressgateway-certs
+      secretName: istio-ingressgateway-certs
+      mountPath: /etc/istio/ingressgateway-certs
+    - name: ingressgateway-ca-certs
+      secretName: istio-ingressgateway-ca-certs
+      mountPath: /etc/istio/ingressgateway-ca-certs
+  istio-ingressgateway-hmn:
     runAsRoot: true  # This is necessary because the ports below are 80 and 443.
     enabled: true
     labels:
       app: istio-ingressgateway-hmn
-      istio: istio-ingressgateway-hmn
+      istio: ingressgateway-hmn
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
+    rollingMaxSurge: 100%
+    rollingMaxUnavailable: 25%
     podAffinityTerm:
     - key: app
       operator: In

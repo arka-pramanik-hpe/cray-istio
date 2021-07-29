@@ -1,55 +1,53 @@
-{{ $root := . }}
-{{- range .Values.gateways }}
-{{- if not .customService }}
+{{- range $name, $options:= .Values.gateways }}
+{{- if not $options.customService }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .name }}
-  namespace: {{ .namespace | default $root.Release.Namespace }}
+  name: {{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   annotations:
-    {{- range $key, $val := .serviceAnnotations }}
+    {{- range $key, $val := $options.serviceAnnotations }}
     {{ $key }}: {{ $val | quote }}
     {{- end }}
   labels:
-{{ .labels | toYaml | indent 4 }}
-    release: {{ $root.Release.Name }}
+{{ $options.labels | toYaml | indent 4 }}
+    release: {{ $.Release.Name }}
 spec:
-{{- if .loadBalancerIP }}
-  loadBalancerIP: "{{ .loadBalancerIP }}"
+{{- if $options.loadBalancerIP }}
+  loadBalancerIP: "{{ $options.loadBalancerIP }}"
 {{- end }}
-{{- if .loadBalancerSourceRanges }}
+{{- if $options.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
-{{ toYaml .loadBalancerSourceRanges | indent 4 }}
+{{ toYaml $options.loadBalancerSourceRanges | indent 4 }}
 {{- end }}
-{{- if .externalIPs }}
+{{- if $options.externalIPs }}
   externalIPs:
-{{ toYaml .externalIPs | indent 4 }}
+{{ toYaml $options.externalIPs | indent 4 }}
 {{- end }}
-{{- if .externalTrafficPolicy }}
-  externalTrafficPolicy: {{.externalTrafficPolicy }}
+{{- if $options.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ $options.externalTrafficPolicy }}
 {{- end }}
-  type: {{ .type }}
+  type: {{ $options.type }}
   selector:
-{{ .labels | toYaml | indent 4 }}
+{{ $options.labels | toYaml | indent 4 }}
   ports:
-    {{- range $key, $val := .ports }}
+    {{- range $key, $val := $options.ports }}
     -
       {{- range $pkey, $pval := $val }}
       {{ $pkey}}: {{ $pval }}
       {{- end }}
     {{- end }}
-    {{- if $root.Values.global.meshExpansion.enabled }}
-    {{- range $key, $val := .meshExpansionPorts }}
+    {{- if $.Values.global.meshExpansion.enabled }}
+    {{- range $key, $val := $options.meshExpansionPorts }}
     -
       {{- range $pkey, $pval := $val }}
       {{ $pkey}}: {{ $pval }}
       {{- end }}
     {{- end }}
     {{- end }}
-  {{ range $app := .ingressPorts }}
-    -
-      port: {{ $app.port }}
+  {{ range $app := $options.ingressPorts }}
+    - port: {{ $app.port }}
       name: {{ $app.name }}
   {{- end }}
 {{- end }}

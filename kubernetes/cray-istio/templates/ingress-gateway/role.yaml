@@ -1,13 +1,12 @@
-{{ $root := . }}
-{{- range .Values.gateways }}
+{{- range $name, $options:= .Values.gateways }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .name }}-sds
-  namespace: {{ .namespace | default $root.Release.Namespace }}
+  name: {{ $name }}-sds
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
-    release: {{ $root.Release.Name }}
+    release: {{ $.Release.Name }}
 rules:
 - apiGroups: [""]
   resources: ["secrets"]

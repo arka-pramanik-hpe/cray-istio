@@ -1,20 +1,19 @@
 {{- if .Values.global.multiCluster.enabled }}
-{{ $root := . }}
-{{- range .Values.gateways }}
+{{- range $name, $options:= .Values.gateways }}
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: istio-multicluster-ingressgateway
-  namespace: {{ .namespace | default $root.Release.Namespace }}
+  name: istio-multicluster-{{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
 {{ .labels | toYaml | indent 4 }}
-    release: {{ $root.Release.Name }}
+    release: {{ $.Release.Name }}
 spec:
   selector:
     istio: ingressgateway
   servers:
   - hosts:
-    - "*.{{ $root.Values.global.multiCluster.globalDomainSuffix | trim }}"
+    - "*.{{ $.Values.global.multiCluster.globalDomainSuffix | trim }}"
     port:
       name: tls
       number: 15443
@@ -22,15 +21,15 @@ spec:
     tls:
       mode: AUTO_PASSTHROUGH
 ---
-{{- if $root.Values.global.multiCluster.includeEnvoyFilter }}
+{{- if $.Values.global.multiCluster.includeEnvoyFilter }}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: istio-multicluster-ingressgateway
-  namespace: {{ .namespace | default $root.Release.Namespace }}
+  name: istio-multicluster-{{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
-{{ .labels | toYaml | indent 4 }}
-    release: {{ $root.Release.Name }}
+{{ $options.labels | toYaml | indent 4 }}
+    release: {{ $.Release.Name }}
 spec:
   workloadSelector:
     labels:
@@ -50,22 +49,22 @@ spec:
         name: "envoy.filters.network.tcp_cluster_rewrite"
         typed_config:
           "@type": "type.googleapis.com/istio.envoy.config.filter.network.tcp_cluster_rewrite.v2alpha1.TcpClusterRewrite"
-          cluster_pattern: "\\.{{ $root.Values.global.multiCluster.globalDomainSuffix | trim }}$"
-          cluster_replacement: ".svc.{{ $root.Values.global.proxy.clusterDomain }}"
+          cluster_pattern: "\\.{{ $.Values.global.multiCluster.globalDomainSuffix | trim }}$"
+          cluster_replacement: ".svc.{{ $.Values.global.proxy.clusterDomain }}"
 ---
 {{- end }}
 ## To ensure all traffic to globalDomainSuffix is using mTLS
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: istio-multicluster-ingressgateway
-  namespace: {{ .namespace | default $root.Release.Namespace }}
+  name: istio-multicluster-{{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
-{{ .labels | toYaml | indent 4 }}
-    release: {{ $root.Release.Name }}
+{{ $options.labels | toYaml | indent 4 }}
+    release: {{ $.Release.Name }}
 spec:
-  host: "*.{{ $root.Values.global.multiCluster.globalDomainSuffix | trim }}"
-  {{- if $root.Values.global.defaultConfigVisibilitySettings }}
+  host: "*.{{ $.Values.global.multiCluster.globalDomainSuffix | trim }}"
+  {{- if $.Values.global.defaultConfigVisibilitySettings }}
   exportTo:
   - '*'
   {{- end }}
