@@ -14,3 +14,19 @@ metadata:
   namespace: istio-system
 status:
   readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-ingressgateway-chn
+  namespace: istio-system
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-ingressgateway-cmn
+  namespace: istio-system
+status:
+  readyReplicas: 1

@@ -1,72 +1,79 @@
-{{- $gateway := index .Values "gateways" "istio-ingressgateway-hmn" }}
+{{ $network := .Values.global.network }}
+{{- range .Values.gateways }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $gateway.name | default "istio-ingressgateway-hmn" }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ .name }}
+  namespace: {{ .namespace | default $.Release.Namespace }}
   labels:
-{{ $gateway.labels | toYaml | indent 4 }}
-    release: {{ .Release.Name }}
+{{ .labels | toYaml | indent 4 }}
+    release: {{ $.Release.Name }}
 spec:
-{{- if not $gateway.autoscaleEnabled }}
-{{- if $gateway.replicaCount }}
-  replicas: {{ $gateway.replicaCount }}
+{{- if not .autoscaleEnabled }}
+{{- if .replicaCount }}
+  replicas: {{ .replicaCount }}
 {{- end }}
 {{- end }}
   selector:
     matchLabels:
-{{ $gateway.labels | toYaml | indent 6 }}
+{{ .labels | toYaml | indent 6 }}
+  {{- if or .rollingMaxSurge .rollingMaxUnavailable }}
   strategy:
     rollingUpdate:
-      maxSurge: {{ $gateway.rollingMaxSurge }}
-      maxUnavailable: {{ $gateway.rollingMaxUnavailable }}
+      {{- if .rollingMaxSurge }}
+      maxSurge: {{ .rollingMaxSurge }}
+      {{- end }}
+      {{- if .rollingMaxUnavailable }}
+      maxUnavailable: {{ .rollingMaxUnavailable }}
+      {{- end }}
+  {{- end }}
   template:
     metadata:
       labels:
-{{ $gateway.labels | toYaml | indent 8 }}
-{{- if eq .Release.Namespace "istio-system"}}
-        heritage: Tiller
+{{ .labels | toYaml | indent 8 }}
+{{- if eq $.Release.Namespace "istio-system"}}
         release: istio
         chart: gateways
 {{- end }}
-        service.istio.io/canonical-name: {{ $gateway.name | default "istio-ingressgateway-hmn" }}
-        {{- if not (eq .Values.revision "") }}
-        service.istio.io/canonical-revision: {{ .Values.revision }}
+        service.istio.io/canonical-name: {{ .name }}
+        {{- if $.Values.revision }}
+        service.istio.io/canonical-revision: {{ $.Values.revision }}
         {{- else}}
         service.istio.io/canonical-revision: latest
         {{- end }}
       annotations:
-        {{- if .Values.meshConfig.enablePrometheusMerge }}
+        {{- if $.Values.global.meshConfig.enablePrometheusMerge }}
         prometheus.io/port: "15090"
         prometheus.io/scrape: "true"
         prometheus.io/path: "/stats/prometheus"
         {{- end }}
         sidecar.istio.io/inject: "false"
-{{- if $gateway.podAnnotations }}
-{{ toYaml $gateway.podAnnotations | indent 8 }}
+{{- if .podAnnotations }}
+{{ toYaml .podAnnotations | indent 8 }}
 {{ end }}
     spec:
-{{- if not $gateway.runAsRoot }}
+{{- if not .runAsRoot }}
       securityContext:
         runAsUser: 1337
         runAsGroup: 1337
         runAsNonRoot: true
         fsGroup: 1337
 {{- end }}
-      serviceAccountName: {{ $gateway.name | default "istio-ingressgateway-hmn" }}-service-account
-{{- if .Values.global.priorityClassName }}
-      priorityClassName: "{{ .Values.global.priorityClassName }}"
+      serviceAccountName: {{ .name | }}-service-account
+{{- if $.Values.global.priorityClassName }}
+      priorityClassName: "{{ $.Values.global.priorityClassName }}"
 {{- end }}
-{{- if .Values.global.proxy.enableCoreDump }}
+{{- if $.Values.global.proxy.enableCoreDump }}
       initContainers:
         - name: enable-core-dump
-{{- if contains "/" .Values.global.proxy.image }}
-          image: "{{ .Values.global.proxy.image }}"
+{{- if contains "/" $.Values.global.proxy.image }}
+          image: "{{ $.Values.global.proxy.image }}"
 {{- else }}
-          image: "{{ .Values.global.hub }}/{{ .Values.global.proxy.image | default "proxyv2" }}:{{ .Values.global.tag }}"
+          image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image | default "proxyv2" }}:{{ $.Values.global.tag }}"
 {{- end }}
-{{- if .Values.global.imagePullPolicy }}
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+{{- if $.Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
 {{- end }}
           command:
             - /bin/sh
@@ -81,20 +88,20 @@ spec:
 {{- end }}
       containers:
         - name: istio-proxy
-{{- if contains "/" .Values.global.proxy.image }}
-          image: "{{ .Values.global.proxy.image }}"
+{{- if contains "/" $.Values.global.proxy.image }}
+          image: "{{ $.Values.global.proxy.image }}"
 {{- else }}
-          image: "{{ .Values.global.hub }}/{{ .Values.global.proxy.image | default "proxyv2" }}:{{ .Values.global.tag }}"
+          image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image | default "proxyv2" }}:{{ $.Values.global.tag }}"
 {{- end }}
-{{- if .Values.global.imagePullPolicy }}
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+{{- if $.Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
 {{- end }}
           ports:
-            {{- range $key, $val := $gateway.ports }}
+            {{- range $key, $val := .ports }}
             - containerPort: {{ $val.targetPort | default $val.port }}
             {{- end }}
             {{- if $.Values.global.meshExpansion.enabled }}
-            {{- range $key, $val := $gateway.meshExpansionPorts }}
+            {{- range $key, $val := .meshExpansionPorts }}
             - containerPort: {{ $val.targetPort | default $val.port }}
             {{- end }}
             {{- end }}
@@ -105,28 +112,28 @@ spec:
           - proxy
           - router
           - --domain
-          - $(POD_NAMESPACE).svc.{{ .Values.global.proxy.clusterDomain }}
-        {{- if .Values.global.proxy.logLevel }}
-          - --proxyLogLevel={{ .Values.global.proxy.logLevel }}
+          - $(POD_NAMESPACE).svc.{{ $.Values.global.proxy.clusterDomain }}
+        {{- if $.Values.global.proxy.logLevel }}
+          - --proxyLogLevel={{ $.Values.global.proxy.logLevel }}
         {{- end}}
-        {{- if .Values.global.proxy.componentLogLevel }}
-          - --proxyComponentLogLevel={{ .Values.global.proxy.componentLogLevel }}
+        {{- if $.Values.global.proxy.componentLogLevel }}
+          - --proxyComponentLogLevel={{ $.Values.global.proxy.componentLogLevel }}
         {{- end}}
-        {{- if .Values.global.logging.level }}
-          - --log_output_level={{ .Values.global.logging.level }}
+        {{- if $.Values.global.logging.level }}
+          - --log_output_level={{ $.Values.global.logging.level }}
         {{- end}}
-        {{- if .Values.global.logAsJson }}
+        {{- if $.Values.global.logAsJson }}
           - --log_as_json
         {{- end }}
           - --serviceCluster
-          - {{ $gateway.name | default "istio-ingressgateway-hmn" }}
-        {{- if .Values.global.sts.servicePort }}
-          - --stsPort={{ .Values.global.sts.servicePort }}
+          - {{ .name | default "istio-ingressgateway-hmn" }}
+        {{- if $.Values.global.sts.servicePort }}
+          - --stsPort={{ $.Values.global.sts.servicePort }}
         {{- end }}
-        {{- if .Values.global.trustDomain }}
-          - --trust-domain={{ .Values.global.trustDomain }}
+        {{- if $.Values.global.trustDomain }}
+          - --trust-domain={{ $.Values.global.trustDomain }}
         {{- end }}
-        {{- if not $gateway.runAsRoot }}
+        {{- if not .runAsRoot }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -146,21 +153,21 @@ spec:
             successThreshold: 1
             timeoutSeconds: 1
           resources:
-{{- if $gateway.resources }}
-{{ toYaml $gateway.resources | indent 12 }}
+{{- if .resources }}
+{{ toYaml .resources | indent 12 }}
 {{- else }}
-{{ toYaml .Values.global.defaultResources | indent 12 }}
+{{ toYaml $.Values.global.defaultResources | indent 12 }}
 {{- end }}
           env:
           - name: JWT_POLICY
-            value: {{ .Values.global.jwtPolicy }}
+            value: {{ $.Values.global.jwtPolicy }}
           - name: PILOT_CERT_PROVIDER
-            value: {{ .Values.global.pilotCertProvider }}
+            value: {{ $.Values.global.pilotCertProvider }}
           - name: CA_ADDR
-          {{- if .Values.global.caAddress }}
-            value: {{ .Values.global.caAddress }}
+          {{- if $.Values.global.caAddress }}
+            value: {{ $.Values.global.caAddress }}
           {{- else }}
-            value: istiod{{- if not (eq .Values.revision "") }}-{{ .Values.revision }}{{- end }}.{{ .Values.global.istioNamespace }}.svc:15012
+            value: istiod{{- if $.Values.revision }}-{{ $.Values.revision }}{{- end }}.{{ $.Values.global.istioNamespace }}.svc:15012
           {{- end }}
           - name: NODE_NAME
             valueFrom:
@@ -200,9 +207,9 @@ spec:
               fieldRef:
                 fieldPath: metadata.labels['service.istio.io/canonical-revision']
           - name: ISTIO_META_WORKLOAD_NAME
-            value: {{ $gateway.name | default "istio-ingressgateway-hmn" }}
+            value: {{ .name | }}
           - name: ISTIO_META_OWNER
-            value: kubernetes://apis/apps/v1/namespaces/{{ .Release.Namespace }}/deployments/{{ $gateway.name | default "istio-ingressgateway-hmn" }}
+            value: kubernetes://apis/apps/v1/namespaces/{{ $.Release.Namespace }}/deployments/{{ .name }}
           {{- if $.Values.global.meshID }}
           - name: ISTIO_META_MESH_ID
             value: "{{ $.Values.global.meshID }}"
@@ -210,23 +217,23 @@ spec:
           - name: ISTIO_META_MESH_ID
             value: "{{ $.Values.global.trustDomain }}"
           {{- end }}
-          {{- range $key, $val := $gateway.env }}
+          {{- range $key, $val := .env }}
           - name: {{ $key }}
             value: {{ $val }}
           {{- end }}
-          {{- range $key, $value := .Values.meshConfig.defaultConfig.proxyMetadata }}
+          {{- range $key, $value := $.Values.global.meshConfig.defaultConfig.proxyMetadata }}
           - name: {{ $key }}
             value: "{{ $value }}"
           {{- end }}
-          {{ $network_set := index $gateway.env "ISTIO_META_NETWORK" }}
-          {{- if and (not $network_set) .Values.global.network }}
+          {{ $network_set := index .env "ISTIO_META_NETWORK" }}
+          {{- if and (not $network_set) $.Values.global.network }}
           - name: ISTIO_META_NETWORK
-            value: {{ .Values.global.network }}
+            value: {{ $.Values.global.network }}
           {{- end }}
-{{- if $gateway.podAnnotations }}
+{{- if .podAnnotations }}
           - name: "ISTIO_METAJSON_ANNOTATIONS"
             value: |
-{{ toJson $gateway.podAnnotations | indent 16}}
+{{ toJson .podAnnotations | indent 16}}
 {{ end }}
           - name: ISTIO_META_CLUSTER_ID
             value: "{{ $.Values.global.multiCluster.clusterName | default `Kubernetes` }}"
@@ -235,18 +242,18 @@ spec:
             mountPath: /etc/istio/proxy
           - name: config-volume
             mountPath: /etc/istio/config
-{{- if eq .Values.global.pilotCertProvider "istiod" }}
+{{- if eq $.Values.global.pilotCertProvider "istiod" }}
           - mountPath: /var/run/secrets/istio
             name: istiod-ca-cert
 {{- end }}
-{{- if eq .Values.global.jwtPolicy "third-party-jwt" }}
+{{- if eq $.Values.global.jwtPolicy "third-party-jwt" }}
           - name: istio-token
             mountPath: /var/run/secrets/tokens
             readOnly: true
 {{- end }}
           - name: gatewaysdsudspath
             mountPath: /var/run/ingress_gateway
-          {{- if .Values.global.mountMtlsCerts }}
+          {{- if $.Values.global.mountMtlsCerts }}
           # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
           - name: istio-certs
             mountPath: /etc/certs
@@ -256,23 +263,27 @@ spec:
             name: istio-data
           - name: podinfo
             mountPath: /etc/istio/pod
-          {{- range $gateway.secretVolumes }}
+          {{- if .secretVolumesPath }}
+          {{- range .secretVolumes }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
             readOnly: true
           {{- end }}
-          {{- range $gateway.configVolumes }}
+          {{- end }}
+          {{- if.configVolumes }}
+          {{- range .configVolumes }}
           {{- if .mountPath }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
             readOnly: true
           {{- end }}
           {{- end }}
-{{- if $gateway.additionalContainers }}
-{{ toYaml $gateway.additionalContainers | indent 8 }}
+          {{- end }}
+{{- if .additionalContainers }}
+{{ toYaml .additionalContainers | indent 8 }}
 {{- end }}
       volumes:
-{{- if eq .Values.global.pilotCertProvider "istiod" }}
+{{- if eq $.Values.global.pilotCertProvider "istiod" }}
       - name: istiod-ca-cert
         configMap:
           name: istio-ca-root-cert
@@ -292,16 +303,16 @@ spec:
         emptyDir: {}
       - name: istio-data
         emptyDir: {}
-{{- if eq .Values.global.jwtPolicy "third-party-jwt" }}
+{{- if eq $.Values.global.jwtPolicy "third-party-jwt" }}
       - name: istio-token
         projected:
           sources:
           - serviceAccountToken:
               path: istio-token
               expirationSeconds: 43200
-              audience: {{ .Values.global.sds.token.aud }}
+              audience: {{ $.Values.global.sds.token.aud }}
 {{- end }}
-      {{- if .Values.global.mountMtlsCerts }}
+      {{- if $.Values.global.mountMtlsCerts }}
       # Use the key and cert mounted to /etc/certs/ for the in-cluster mTLS communications.
       - name: istio-certs
         secret:
@@ -310,27 +321,65 @@ spec:
       {{- end }}
       - name: config-volume
         configMap:
-          name: istio{{- if not (eq .Values.revision "") }}-{{ .Values.revision }}{{- end }}
+          name: istio{{- if $.Values.revision }}-{{ $.Values.revision }}{{- end }}
           optional: true
-      {{- range $gateway.secretVolumes }}
+      {{- if .secretVolumes }}
+      {{- range .secretVolumes }}
       - name: {{ .name }}
         secret:
           secretName: {{ .secretName | quote }}
           optional: true
       {{- end }}
-      {{- range $gateway.configVolumes }}
+      {{- end }}
+      {{- if .configVolumes }}
+      {{- range .configVolumes }}
       - name: {{ .name }}
         configMap:
           name: {{ .configMapName | quote }}
           optional: true
       {{- end }}
+      {{- end }}
       affinity:
-      {{- include "nodeaffinity" (dict "global" .Values.global "nodeSelector" $gateway.nodeSelector) | indent 6 }}
-      {{- include "podAntiAffinity" $gateway | indent 6 }}
-{{- if $gateway.tolerations }}
+      {{- include "nodeaffinity" (dict "global" $.Values.global "nodeSelector" .nodeSelector) | indent 6 }}
+        {{- if .podAntiAffinityTerm }}
+        podAntiAffinity:
+          podAffinityTerm:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                matchExpressions:
+                  {{- range $k, $v := .podAffinityTerm }}
+                  - key: {{ $v.key }}
+                    operator: {{ $v.operator }}
+                    values:
+                      {{- $vals := split "," $v.values }}
+                      {{- range $i, $v := $vals }}
+                      - {{ $v | quote }}
+                      {{- end }}
+                    topologyKey: {{ $v.topologyKey | default "kubernetes.io/hostname" }}
+                  {{- end }}
+                {{- end }}
+
+        {{- if .podAntiAffinity }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+              matchExpressions:
+                {{- range $k, $v := .podAntiAffinity }}
+                - key: {{ $v.key }}
+                  operator: {{ $v.operator }}
+                  values:
+                    {{- $vals := split "," $v.values }}
+                    {{- range $i, $item := $vals }}
+                    - {{ $item | quote }}
+                    {{- end }}
+                  topologyKey: {{ $v.topologyKey | default "kubernetes.io/hostname" }}
+                {{- end }}
+        {{- end }}
+{{- if .tolerations }}
       tolerations:
-{{ toYaml $gateway.tolerations | indent 6 }}
-{{- else if .Values.global.defaultTolerations }}
+{{ toYaml .tolerations | indent 6 }}
+{{- else if $.Values.global.defaultTolerations }}
       tolerations:
-{{ toYaml .Values.global.defaultTolerations | indent 6 }}
+{{ toYaml $.Values.global.defaultTolerations | indent 6 }}
+{{- end }}
 {{- end }}

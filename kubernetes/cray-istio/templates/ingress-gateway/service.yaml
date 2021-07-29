@@ -1,0 +1,56 @@
+{{ $root := . }}
+{{- range .Values.gateways }}
+{{- if not .customService }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace | default $root.Release.Namespace }}
+  annotations:
+    {{- range $key, $val := .serviceAnnotations }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+  labels:
+{{ .labels | toYaml | indent 4 }}
+    release: {{ $root.Release.Name }}
+spec:
+{{- if .loadBalancerIP }}
+  loadBalancerIP: "{{ .loadBalancerIP }}"
+{{- end }}
+{{- if .loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml .loadBalancerSourceRanges | indent 4 }}
+{{- end }}
+{{- if .externalIPs }}
+  externalIPs:
+{{ toYaml .externalIPs | indent 4 }}
+{{- end }}
+{{- if .externalTrafficPolicy }}
+  externalTrafficPolicy: {{.externalTrafficPolicy }}
+{{- end }}
+  type: {{ .type }}
+  selector:
+{{ .labels | toYaml | indent 4 }}
+  ports:
+    {{- range $key, $val := .ports }}
+    -
+      {{- range $pkey, $pval := $val }}
+      {{ $pkey}}: {{ $pval }}
+      {{- end }}
+    {{- end }}
+    {{- if $root.Values.global.meshExpansion.enabled }}
+    {{- range $key, $val := .meshExpansionPorts }}
+    -
+      {{- range $pkey, $pval := $val }}
+      {{ $pkey}}: {{ $pval }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+  {{ range $app := .ingressPorts }}
+    -
+      port: {{ $app.port }}
+      name: {{ $app.name }}
+  {{- end }}
+{{- end }}
+{{- end }}
