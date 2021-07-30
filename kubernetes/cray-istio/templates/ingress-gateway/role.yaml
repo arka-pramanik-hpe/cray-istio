@@ -1,4 +1,4 @@
-{{- range $name, $options:= .Values.gateways }}
+{{- range $name, $options:= .Values.deployments }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

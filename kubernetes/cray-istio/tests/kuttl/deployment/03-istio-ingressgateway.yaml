@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: istio-ingressgateway
+  namespace: istio-system
   annotations:
     meta.helm.sh/release-name: cray-istio
     meta.helm.sh/release-namespace: istio-system
@@ -8,8 +10,6 @@ metadata:
     app: istio-ingressgateway
     app.kubernetes.io/managed-by: Helm
     istio: ingressgateway
-  name: istio-ingressgateway
-  namespace: istio-system
 spec:
   progressDeadlineSeconds: 600
   replicas: 1

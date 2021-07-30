@@ -32,7 +32,7 @@ global:
   meshConfig:
     enablePrometheusMerge: true
 
-gateways:
+deployments:
   istio-ingressgateway:
     autoscaleEnabled: ""
     replicaCount: 1
@@ -42,7 +42,7 @@ gateways:
         memory: 128Mi
       limits:
         memory: 128Mi
-  istio-ingressgateway-chn:
+  istio-ingressgateway-customer-admin:
     autoscaleEnabled: ""
     replicaCount: 1
     resources:
@@ -51,7 +51,7 @@ gateways:
         memory: 128Mi
       limits:
         memory: 128Mi
-  istio-ingressgateway-cmn:
+  istio-ingressgateway-customer-user:
     autoscaleEnabled: ""
     replicaCount: 1
     resources:

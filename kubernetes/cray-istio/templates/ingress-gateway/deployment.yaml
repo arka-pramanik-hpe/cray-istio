@@ -1,5 +1,5 @@
 {{ $network := .Values.global.network }}
-{{- range $name, $options := .Values.gateways }}
+{{- range $name, $options := .Values.deployments }}
 ---
 apiVersion: apps/v1
 kind: Deployment

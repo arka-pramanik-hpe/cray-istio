@@ -12,18 +12,16 @@ certificate:
     - "*.vshasta.io"
   secretName: ingress-gateway-cert
 
-gateways:
+deployments:
   istio-ingressgateway:
     labels:
       app: istio-ingressgateway
       istio: ingressgateway
     runAsRoot: true  # This is necessary because the ports below are 80 and 443.
     enabled: true
-    type: LoadBalancer
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
-    externalTrafficPolicy: "Cluster"
     localExternalTrafficPolicy: "Local"
     rollingMaxSurge: 100%
     rollingMaxUnavailable: 25%
@@ -37,6 +35,15 @@ gateways:
     cpu:
       targetAverageUtilization: 80
     applicationPorts: "80"
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
+    - port: 8081
+      name: tls-spire
+    - port: 8888
+      name: cloudinit
     podAffinityTerm:
     - key: app
       operator: In
@@ -52,18 +59,6 @@ gateways:
       values: cray-smd-postgres
       namespaces: [services]
       topologyKey: "kubernetes.io/hostname"
-    ports:
-    - port: 80
-      name: http2
-    - port: 443
-      name: https
-    - port: 8081
-      name: tls-spire
-    - port: 8888
-      name: cloudinit
-    serviceAnnotations:
-      metallb.universe.tf/address-pool: hardware-management
-      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     env:
       ISTIO_META_IDLE_TIMEOUT: 10m
       ISTIO_META_ROUTER_MODE: sni-dnat
@@ -78,12 +73,12 @@ gateways:
     - name: ingressgateway-ca-certs
       secretName: istio-ingressgateway-ca-certs
       mountPath: /etc/istio/ingressgateway-ca-certs
-  istio-ingressgateway-chn:
+  istio-ingressgateway-customer-admin:
     runAsRoot: true  # This is necessary because the ports below are 80 and 443.
     enabled: true
     labels:
-      app: istio-ingressgateway-chn
-      istio: ingressgateway-chn
+      app: istio-ingressgateway-customer-admin
+      istio: ingressgateway-customer-admin
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
@@ -96,15 +91,10 @@ gateways:
       limits:
         cpu: "20"
         memory: 1024Mi
-    ports:
-    - port: 80
-      name: http2
-    - port: 443
-      name: https
     podAffinityTerm:
     - key: app
       operator: In
-      values: istio-ingressgateway-chn
+      values: istio-ingressgateway-customer-admin
       topologyKey: "kubernetes.io/hostname"
     - key: app.kubernetes.io/name
       operator: In
@@ -116,11 +106,13 @@ gateways:
       values: cray-smd-postgres
       namespaces: [services]
       topologyKey: "kubernetes.io/hostname"
-    serviceAnnotations:
-      metallb.universe.tf/address-pool: customer-access
-      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     cpu:
       targetAverageUtilization: 80
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
@@ -131,19 +123,19 @@ gateways:
     - name: ingressgateway-ca-certs
       secretName: istio-ingressgateway-ca-certs
       mountPath: /etc/istio/ingressgateway-ca-certs
-  istio-ingressgateway-cmn:
+  istio-ingressgateway-customer-user:
     runAsRoot: true  # This is necessary because the ports below are 80 and 443.
     enabled: true
     labels:
-      app: istio-ingressgateway-cmn
-      istio: ingressgateway-cmn
+      app: istio-ingressgateway-customer-user
+      istio: ingressgateway-customer-user
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
     podAffinityTerm:
     - key: app
       operator: In
-      values: istio-ingressgateway-cmn
+      values: istio-ingressgateway-customer-user
       topologyKey: "kubernetes.io/hostname"
     - key: app.kubernetes.io/name
       operator: In
@@ -164,15 +156,13 @@ gateways:
       limits:
         cpu: "20"
         memory: 1024Mi
+    cpu:
+      targetAverageUtilization: 80
     ports:
     - port: 80
       name: http2
     - port: 443
       name: https
-    - port: 8888
-      name: cloudinit
-    cpu:
-      targetAverageUtilization: 80
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
@@ -221,18 +211,9 @@ gateways:
     customService: true
     extraServiceLabels:
       peerauthentication: ingressgateway
-    type: LoadBalancer
-    ports:
-    - port: 80
-      targetPort: 80
-      name: http2
-    - port: 443
-      targetPort: 443
-      name: https
     serviceAnnotations:
       metallb.universe.tf/address-pool: hardware-management
       external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
-    loadBalancerIP: ""
     meshExpansionPorts: []
     secretVolumes:
     - name: ingressgateway-certs
@@ -242,9 +223,200 @@ gateways:
       secretName: istio-ingressgateway-ca-certs
       mountPath: /etc/istio/ingressgateway-ca-certs
     applicationPorts: "80"
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
+
+gateways:
+  services-gateway:
+    namespace: services
+    selector:
+      istio: ingressgateway
+    servers:
+      - hosts:
+        - '*'
+        port:
+          name: http
+          number: 80
+          protocol: HTTP
+        tls:
+          httpsRedirect: true
+      - hosts:
+        - '*'
+        port:
+          name: https-443
+          number: 443
+          protocol: HTTPS
+        tls:
+          credentialName: ingress-gateway-cert
+          mode: SIMPLE
+      - hosts:
+        - '*'
+        port:
+          name: tls-spire
+          number: 8081
+          protocol: TLS
+        tls:
+          mode: PASSTHROUGH
+      - hosts:
+        - '*'
+        port:
+          name: cloudinit
+          number: 8888
+          protocol: HTTP
+  hmn-gateway:
+    namespace: services
+    selector:
+      istio: ingressgateway-hmn
+    servers:
+      - hosts:
+        - '*'
+        port:
+          name: http
+          number: 80
+          protocol: HTTP
+      - hosts:
+        - '*'
+        port:
+          name: https-443
+          number: 443
+          protocol: HTTPS
+        tls:
+          credentialName: ingress-gateway-cert
+          mode: SIMPLE
+
+  customer-admin-gateway:
+    namespace: services
+    selector:
+      istio: ingressgateway-customer-admin
+    servers:
+      - hosts:
+        - '*'
+        port:
+          name: http
+          number: 80
+          protocol: HTTP
+      - hosts:
+        - '*'
+        port:
+          name: https-443
+          number: 443
+          protocol: HTTPS
+        tls:
+          credentialName: ingress-gateway-cert
+          mode: SIMPLE
+  customer-user-gateway:
+    namespace: services
+    selector:
+      istio: ingressgateway-customer-user
+    servers:
+      - hosts:
+        - '*'
+        port:
+          name: http
+          number: 80
+          protocol: HTTP
+      - hosts:
+        - '*'
+        port:
+          name: https-443
+          number: 443
+          protocol: HTTPS
+        tls:
+          credentialName: ingress-gateway-cert
+          mode: SIMPLE
+
+services:
+  istio-ingressgateway:
+    labels:
+      app: istio-ingressgateway
+      istio: ingressgateway
+    externalTrafficPolicy: "Cluster"
+    type: LoadBalancer
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
+    - port: 8081
+      name: tls-spire
+    - port: 8888
+      name: cloudinit
+  istio-ingressgateway-local:
+    labels:
+      app: istio-ingressgateway
+      istio: ingressgateway
+    externalTrafficPolicy: "Local"
+    type: LoadBalancer
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
+    - port: 8081
+      name: tls-spire
+    - port: 8888
+      name: cloudinit
+  istio-ingressgateway-hmn:
+    gateway: istio-ingressgateway-hmn
+    labels:
+      app: istio-ingressgateway-hmn
+      istio: ingressgateway-hmn
+    externalTrafficPolicy: "Cluster"
+    type: LoadBalancer
+    serviceAnnotations:
+      metallb.universe.tf/address-pool: hardware-management
+      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
+    - port: 8081
+      name: tls-spire
+    - port: 8888
+      name: cloudinit
+  istio-ingressgateway-can:
+    labels:
+      app: istio-ingressgateway-customer-user
+      istio: ingressgateway
+    externalTrafficPolicy: "Cluster"
+    type: LoadBalancer
+    serviceAnnotations:
+      metallb.universe.tf/address-pool: customer-high-speed
+      external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
+  istio-ingressgateway-chn:
+    labels:
+      app: istio-ingressgateway-customer-user
+      istio: ingressgateway
+    type: LoadBalancer
+    externalTrafficPolicy: "Cluster"
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
+  istio-ingressgateway-cmn:
+    labels:
+      app: istio-ingressgateway
+      istio: ingressgateway
+    type: LoadBalancer
+    externalTrafficPolicy: "Cluster"
+    ports:
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
 
 servicesGateway:
   tls: true

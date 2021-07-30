@@ -1,4 +1,4 @@
-{{- range $name, $options:= .Values.gateways }}
+{{- range $name, $options:= .Values.services }}
 {{- if not $options.customService }}
 ---
 apiVersion: v1

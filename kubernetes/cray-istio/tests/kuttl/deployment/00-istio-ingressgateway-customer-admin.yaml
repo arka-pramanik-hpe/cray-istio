@@ -4,7 +4,7 @@ metadata:
   annotations:
     meta.helm.sh/release-name: cray-istio
     meta.helm.sh/release-namespace: istio-system
-  name: istio-ingressgateway-chn
+  name: istio-ingressgateway-customer-admin
   namespace: istio-system
 spec:
   progressDeadlineSeconds: 600
@@ -24,11 +24,11 @@ spec:
         sidecar.istio.io/inject: "false"
       creationTimestamp: null
       labels:
-        app: istio-ingressgateway-chn
+        app: istio-ingressgateway-customer-admin
         chart: gateways
-        istio: ingressgateway-chn
+        istio: ingressgateway-customer-admin
         release: istio
-        service.istio.io/canonical-name: istio-ingressgateway-chn
+        service.istio.io/canonical-name: istio-ingressgateway-customer-admin
         service.istio.io/canonical-revision: latest
     spec:
       affinity:
@@ -72,7 +72,7 @@ spec:
                     - key: app
                       operator: In
                       values:
-                        - istio-ingressgateway-chn
+                        - istio-ingressgateway-customer-admin
                 topologyKey: kubernetes.io/hostname
               weight: 100
             - podAffinityTerm:
@@ -107,7 +107,7 @@ spec:
             - --proxyComponentLogLevel=misc:error
             - --log_output_level=default:info
             - --serviceCluster
-            - istio-ingressgateway-chn
+            - istio-ingressgateway-customer-admin
             - --trust-domain=cluster.local
           env:
             - name: JWT_POLICY
@@ -157,9 +157,9 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.labels['service.istio.io/canonical-revision']
             - name: ISTIO_META_WORKLOAD_NAME
-              value: istio-ingressgateway-chn
+              value: istio-ingressgateway-customer-admin
             - name: ISTIO_META_OWNER
-              value: kubernetes://apis/apps/v1/namespaces/istio-system/deployments/istio-ingressgateway-chn
+              value: kubernetes://apis/apps/v1/namespaces/istio-system/deployments/istio-ingressgateway-customer-admin
             - name: ISTIO_META_MESH_ID
               value: cluster.local
             - name: ISTIO_META_IDLE_TIMEOUT
@@ -214,8 +214,8 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
-      serviceAccount: istio-ingressgateway-chn-service-account
-      serviceAccountName: istio-ingressgateway-chn-service-account
+      serviceAccount: istio-ingressgateway-customer-admin-service-account
+      serviceAccountName: istio-ingressgateway-customer-admin-service-account
       terminationGracePeriodSeconds: 30
       volumes:
         - configMap:

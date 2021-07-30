@@ -1,5 +1,5 @@
 {{- if and .autoscaleEnabled .autoscaleMin .autoscaleMax }}
-{{- range $name, $options:= .Values.gateways }}
+{{- range $name, $options:= .Values.deployments }}
 ---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler

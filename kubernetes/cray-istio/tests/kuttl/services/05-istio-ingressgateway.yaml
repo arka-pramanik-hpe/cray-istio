@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: istio-ingressgateway-local
+  name: istio-ingressgateway
   namespace: istio-system
   annotations:
     meta.helm.sh/release-name: cray-istio
@@ -13,7 +13,7 @@ metadata:
     peerauthentication: ingressgateway
     release: cray-istio
 spec:
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   ports:
   - name: http2
     port: 80
@@ -34,4 +34,5 @@ spec:
   selector:
     app: istio-ingressgateway
     istio: ingressgateway
+  sessionAffinity: None
   type: LoadBalancer

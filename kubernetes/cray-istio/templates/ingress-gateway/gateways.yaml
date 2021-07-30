@@ -1,0 +1,19 @@
+{{- range $name, $options:= .Values.gateways }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
+  annotations:
+    {{- range $key, $val := $options.annotations }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+  labels:
+{{ $options.labels | toYaml | indent 4 }}
+spec:
+  selector:
+{{ $options.selector | toYaml | indent 4 }}
+  servers:
+{{ $options.servers | toYaml | indent 6 }}
+{{- end }}

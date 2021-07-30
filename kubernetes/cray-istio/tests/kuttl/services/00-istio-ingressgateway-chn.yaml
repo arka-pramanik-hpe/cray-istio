@@ -1,8 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: istio-ingressgateway-chn
+  namespace: istio-system
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: api.chn.wasp.dev.cray.com,auth.chn.wasp.dev.cray.com
     meta.helm.sh/release-name: cray-istio
     meta.helm.sh/release-namespace: istio-system
     metallb.universe.tf/address-pool: customer-high-speed
@@ -14,8 +15,6 @@ metadata:
     istio: istio-ingressgateway-chn
     peerauthentication: ingressgateway
     release: cray-istio
-  name: istio-ingressgateway-chn
-  namespace: istio-system
 spec:
   externalTrafficPolicy: Cluster
   ports:
