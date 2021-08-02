@@ -228,6 +228,8 @@ deployments:
       name: http2
     - port: 443
       name: https
+    - port: 8888
+      name: cloudinit
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
@@ -237,6 +239,9 @@ gateways:
     namespace: services
     selector:
       istio: ingressgateway
+    labels:
+      app: istio-ingressgateway
+      gateway: services-gateway
     servers:
       - hosts:
         - '*'
@@ -273,6 +278,9 @@ gateways:
     namespace: services
     selector:
       istio: ingressgateway-hmn
+    labels:
+      app: istio-ingressgateway
+      gateway: hmn-gateway
     servers:
       - hosts:
         - '*'
@@ -289,11 +297,19 @@ gateways:
         tls:
           credentialName: ingress-gateway-cert
           mode: SIMPLE
-
+      - hosts:
+        - '*'
+        port:
+          name: cloudinit
+          number: 8888
+          protocol: HTTP
   customer-admin-gateway:
     namespace: services
     selector:
       istio: ingressgateway-customer-admin
+    labels:
+      app: istio-ingressgateway
+      gateway: customer-admin-gateway
     servers:
       - hosts:
         - '*'
@@ -314,6 +330,9 @@ gateways:
     namespace: services
     selector:
       istio: ingressgateway-customer-user
+    labels:
+      app: istio-ingressgateway
+      gateway: customer-user-gateway
     servers:
       - hosts:
         - '*'
@@ -333,9 +352,13 @@ gateways:
 
 services:
   istio-ingressgateway:
+    selectors:
+      app: istio-ingressgateway
+      istio: ingressgateway
     labels:
       app: istio-ingressgateway
       istio: ingressgateway
+      peerauthentication: ingressgateway
     externalTrafficPolicy: "Cluster"
     type: LoadBalancer
     ports:
@@ -348,9 +371,13 @@ services:
     - port: 8888
       name: cloudinit
   istio-ingressgateway-local:
+    selectors:
+      app: istio-ingressgateway
+      istio: ingressgateway
     labels:
       app: istio-ingressgateway
       istio: ingressgateway
+      peerauthentication: ingressgateway
     externalTrafficPolicy: "Local"
     type: LoadBalancer
     ports:
@@ -364,9 +391,13 @@ services:
       name: cloudinit
   istio-ingressgateway-hmn:
     gateway: istio-ingressgateway-hmn
+    selectors:
+      app: istio-ingressgateway-hmn
+      istio: ingressgateway-hmn
     labels:
       app: istio-ingressgateway-hmn
       istio: ingressgateway-hmn
+      peerauthentication: ingressgateway
     externalTrafficPolicy: "Cluster"
     type: LoadBalancer
     serviceAnnotations:
@@ -377,14 +408,16 @@ services:
       name: http2
     - port: 443
       name: https
-    - port: 8081
-      name: tls-spire
     - port: 8888
       name: cloudinit
   istio-ingressgateway-can:
+    selectors:
+      app: istio-ingressgateway-customer-user
+      istio: ingressgateway-customer-user
     labels:
       app: istio-ingressgateway-customer-user
-      istio: ingressgateway
+      istio: ingressgateway-customer-user
+      peerauthentication: ingressgateway
     externalTrafficPolicy: "Cluster"
     type: LoadBalancer
     serviceAnnotations:
@@ -396,10 +429,16 @@ services:
     - port: 443
       name: https
   istio-ingressgateway-chn:
+    selectors:
+      app: istio-ingressgateway-customer-user
+      istio: ingressgateway-customer-user
     labels:
       app: istio-ingressgateway-customer-user
-      istio: ingressgateway
+      istio: ingressgateway-customer-user
+      peerauthentication: ingressgateway
     type: LoadBalancer
+    serviceAnnotations:
+      metallb.universe.tf/address-pool: customer-high-speed
     externalTrafficPolicy: "Cluster"
     ports:
     - port: 80
@@ -407,10 +446,16 @@ services:
     - port: 443
       name: https
   istio-ingressgateway-cmn:
+    selectors:
+      app: istio-ingressgateway-customer-user
+      istio: ingressgateway-customer-user
     labels:
-      app: istio-ingressgateway
-      istio: ingressgateway
+      app: istio-ingressgateway-customer-user
+      istio: ingressgateway-customer-user
+      peerauthentication: ingressgateway
     type: LoadBalancer
+    serviceAnnotations:
+      metallb.universe.tf/address-pool: customer-access
     externalTrafficPolicy: "Cluster"
     ports:
     - port: 80

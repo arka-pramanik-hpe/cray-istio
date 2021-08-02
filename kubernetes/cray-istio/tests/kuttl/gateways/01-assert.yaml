@@ -27,3 +27,9 @@ spec:
     tls:
       credentialName: ingress-gateway-cert
       mode: SIMPLE
+  - hosts:
+    - '*'
+    port:
+      name: cloudinit
+      number: 8888
+      protocol: HTTP

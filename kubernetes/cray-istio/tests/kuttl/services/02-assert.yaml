@@ -1,19 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: istio-ingressgateway-local
+  name: istio-ingressgateway-hmn
   namespace: istio-system
   annotations:
     meta.helm.sh/release-name: cray-istio
     meta.helm.sh/release-namespace: istio-system
+    metallb.universe.tf/address-pool: hardware-management
   labels:
-    app: istio-ingressgateway
-    app.kubernetes.io/managed-by: Helm
-    istio: ingressgateway
+    app: istio-ingressgateway-hmn
+    istio: ingressgateway-hmn
     peerauthentication: ingressgateway
-    release: cray-istio
 spec:
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   ports:
   - name: http2
     port: 80
@@ -23,15 +22,12 @@ spec:
     port: 443
     protocol: TCP
     targetPort: 443
-  - name: tls-spire
-    port: 8081
-    protocol: TCP
-    targetPort: 8081
   - name: cloudinit
     port: 8888
     protocol: TCP
     targetPort: 8888
   selector:
-    app: istio-ingressgateway
-    istio: ingressgateway
+    app: istio-ingressgateway-hmn
+    istio: ingressgateway-hmn
+  sessionAffinity: None
   type: LoadBalancer

@@ -30,7 +30,7 @@ spec:
 {{- end }}
   type: {{ $options.type }}
   selector:
-{{ $options.labels | toYaml | indent 4 }}
+{{ $options.selectors | toYaml | indent 4 }}
   ports:
     {{- range $key, $val := $options.ports }}
     -

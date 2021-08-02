@@ -1,20 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: istio-ingressgateway-chn
+  name: istio-ingressgateway-cmn
   namespace: istio-system
   annotations:
     meta.helm.sh/release-name: cray-istio
     meta.helm.sh/release-namespace: istio-system
-    metallb.universe.tf/address-pool: customer-high-speed
+    metallb.universe.tf/address-pool: customer-access
   labels:
-    app: istio-ingressgateway-chn
-    app.kubernetes.io/managed-by: Helm
-    chart: gateways
-    heritage: Helm
-    istio: istio-ingressgateway-chn
+    app: istio-ingressgateway-customer-user
+    istio: ingressgateway-customer-user
     peerauthentication: ingressgateway
-    release: cray-istio
 spec:
   externalTrafficPolicy: Cluster
   ports:
@@ -28,6 +24,6 @@ spec:
     targetPort: 443
   selector:
     app: istio-ingressgateway-customer-user
-    istio: istio-ingressgateway-customer-user
+    istio: ingressgateway-customer-user
   sessionAffinity: None
   type: LoadBalancer
