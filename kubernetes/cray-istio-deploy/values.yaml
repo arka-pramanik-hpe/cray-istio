@@ -36,19 +36,6 @@ pilot:
 meshConfig:
   accessLogFile: /dev/stdout
 
-addonComponents:
-  prometheus:
-    enabled: true
-    k8s:
-      replicaCount: 3
-      resources:
-        requests:
-          cpu: "2"
-          memory: 5Gi
-        limits:
-          cpu: "20"
-          memory: 20Gi
-
 istio:
 
   global:
@@ -75,11 +62,6 @@ istio:
         name: https
       env:
         ISTIO_META_IDLE_TIMEOUT: 10m
-
-  prometheus:
-    retention: 4h
-    security:
-      enabled: false
 
   tracing:
     enabled: true

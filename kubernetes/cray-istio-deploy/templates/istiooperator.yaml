@@ -44,14 +44,10 @@ spec:
       hub: {{ .Values.pilot.hub }}
       tag: {{ .Values.pilot.tag }}
   addonComponents:
-    prometheus:
-{{ toYaml .Values.addonComponents.prometheus | indent 6 }}
     tracing:
       enabled: true
   values:
     global:
 {{ toYaml .Values.istio.global | indent 6 }}
-    prometheus:
-{{ toYaml .Values.istio.prometheus | indent 6 }}
     grafana:
 {{ toYaml .Values.istio.grafana | indent 6 }}

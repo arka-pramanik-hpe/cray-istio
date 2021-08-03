@@ -507,7 +507,6 @@ global:
 
   # Telemetry namespace, including tracing.
   telemetryNamespace: istio-system
-  prometheusNamespace: istio-system
   policyNamespace: istio-system
   configRootNamespace: istio-system
 
@@ -1062,9 +1061,6 @@ authn:
     matchLabels:
       peerauthentication: ingressgateway
 
-prometheus:
-  enabled: true
-
 tracing:
   enabled: true
 
@@ -1078,16 +1074,6 @@ istio:
 
   galley:
     enabled: false
-
-  prometheus:
-    enabled: true
-    hub: quay.io/prometheus
-    image: prometheus
-    tag: v2.15.2
-    retention: 4h
-    security:
-      enabled: false
-    externalAuthority: prometheus-istio.local
 
   grafana:
     enabled: true
