@@ -447,11 +447,11 @@ services:
       name: https
   istio-ingressgateway-cmn:
     selectors:
-      app: istio-ingressgateway-customer-user
-      istio: ingressgateway-customer-user
+      app: istio-ingressgateway
+      istio: ingressgateway
     labels:
-      app: istio-ingressgateway-customer-user
-      istio: ingressgateway-customer-user
+      app: istio-ingressgateway
+      istio: ingressgateway
       peerauthentication: ingressgateway
     type: LoadBalancer
     serviceAnnotations:

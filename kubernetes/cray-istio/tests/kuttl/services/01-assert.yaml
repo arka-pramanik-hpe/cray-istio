@@ -8,8 +8,8 @@ metadata:
     meta.helm.sh/release-namespace: istio-system
     metallb.universe.tf/address-pool: customer-access
   labels:
-    app: istio-ingressgateway-customer-user
-    istio: ingressgateway-customer-user
+    app: istio-ingressgateway
+    istio: ingressgateway
     peerauthentication: ingressgateway
 spec:
   externalTrafficPolicy: Cluster
@@ -23,7 +23,7 @@ spec:
     protocol: TCP
     targetPort: 443
   selector:
-    app: istio-ingressgateway-customer-user
-    istio: ingressgateway-customer-user
+    app: istio-ingressgateway
+    istio: ingressgateway
   sessionAffinity: None
   type: LoadBalancer
