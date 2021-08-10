@@ -15,6 +15,7 @@ revision: ""
 
 # Operator resource defaults
 operator:
+  priorityClassName: csm-high-priority-service
   resources:
     limits:
       cpu: 200m
