@@ -5,4 +5,4 @@ description: Deploys the istio operator for Cray systems.
 version: 1.21.0
 dependencies:
   - name: istio-operator
-    version: 1.7.0
+    Version: 1.7.0
