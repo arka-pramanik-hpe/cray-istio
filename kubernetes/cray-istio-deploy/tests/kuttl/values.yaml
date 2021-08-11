@@ -19,3 +19,7 @@ pilot:
     requests:
       cpu: 100m
       memory: 128Mi
+
+istio:
+  global:
+    priorityClassName: ""
