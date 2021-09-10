@@ -105,7 +105,7 @@ global:
   hub: dtr.dev.cray.com/cray
 
   # Default tag for Istio images.
-  tag: 1.7.8-cray1-distroless
+  tag: 1.6.13-cray1
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -433,7 +433,7 @@ global:
   # will not be killed because of low priority class.
   # Refer to https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
   # for more detail.
-  priorityClassName: csm-high-priority-service
+  priorityClassName: ""
 
   # Use the Mesh Control Protocol (MCP) for configuring Mixer and Pilot. Requires an MCP source.
   useMCP: false
@@ -649,6 +649,9 @@ authn:
 prometheus:
   enabled: true
 
+grafana:
+  enabled: true
+
 tracing:
   enabled: true
 
@@ -668,7 +671,6 @@ istio:
 
   gateways:
     istio-ingressgateway:
-      runAsRoot: true  # This is necessary because the ports below are 80 and 443.
       enabled: true
       type: LoadBalancer
       autoscaleEnabled: true
@@ -690,16 +692,6 @@ istio:
       - key: app
         operator: In
         values: istio-ingressgateway
-        topologyKey: "kubernetes.io/hostname"
-      - key: app.kubernetes.io/name
-        operator: In
-        values: cray-smd
-        namespaces: [services]
-        topologyKey: "kubernetes.io/hostname"
-      - key: cluster-name
-        operator: In
-        values: cray-smd-postgres
-        namespaces: [services]
         topologyKey: "kubernetes.io/hostname"
       ports:
       - port: 80
@@ -770,7 +762,6 @@ istio:
 ingressgatewayhmn:
   gateways:
     istio-ingressgateway-hmn:
-      runAsRoot: true  # This is necessary because the ports below are 80 and 443.
       enabled: true
       labels:
         app: istio-ingressgateway-hmn
@@ -782,16 +773,6 @@ ingressgatewayhmn:
       - key: app
         operator: In
         values: istio-ingressgateway-hmn
-        topologyKey: "kubernetes.io/hostname"
-      - key: app.kubernetes.io/name
-        operator: In
-        values: cray-smd
-        namespaces: [services]
-        topologyKey: "kubernetes.io/hostname"
-      - key: cluster-name
-        operator: In
-        values: cray-smd-postgres
-        namespaces: [services]
         topologyKey: "kubernetes.io/hostname"
       resources:
         requests:
@@ -811,9 +792,6 @@ ingressgatewayhmn:
       - port: 80
         targetPort: 80
         name: http2
-      - port: 443
-        targetPort: 443
-        name: https
 
       serviceAnnotations:
         metallb.universe.tf/address-pool: hardware-management

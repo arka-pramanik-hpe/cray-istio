@@ -13,7 +13,7 @@ spec:
     istio: ingressgateway
   servers:
   - hosts:
-    - "*.{{ .Values.global.multiCluster.globalDomainSuffix | trim }}"
+    - "*.global"
     port:
       name: tls
       number: 15443
@@ -21,7 +21,6 @@ spec:
     tls:
       mode: AUTO_PASSTHROUGH
 ---
-{{- if .Values.global.multiCluster.includeEnvoyFilter }}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
@@ -47,13 +46,11 @@ spec:
       operation: INSERT_AFTER
       value:
         name: "envoy.filters.network.tcp_cluster_rewrite"
-        typed_config:
-          "@type": "type.googleapis.com/istio.envoy.config.filter.network.tcp_cluster_rewrite.v2alpha1.TcpClusterRewrite"
-          cluster_pattern: "\\.{{ .Values.global.multiCluster.globalDomainSuffix | trim }}$"
+        config:
+          cluster_pattern: "\\.global$"
           cluster_replacement: ".svc.{{ .Values.global.proxy.clusterDomain }}"
 ---
-{{- end }}
-## To ensure all traffic to globalDomainSuffix is using mTLS
+## To ensure all traffic to *.global is using mTLS
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -63,7 +60,7 @@ metadata:
 {{ $gateway.labels | toYaml | indent 4 }}
     release: {{ .Release.Name }}
 spec:
-  host: "*.{{ .Values.global.multiCluster.globalDomainSuffix | trim }}"
+  host: "*.global"
   {{- if .Values.global.defaultConfigVisibilitySettings }}
   exportTo:
   - '*'

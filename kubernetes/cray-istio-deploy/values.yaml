@@ -1,6 +1,6 @@
 
 hub: dtr.dev.cray.com/cray
-tag: 1.7.8-cray1-distroless
+tag: 1.6.13-cray1
 
 kubectl:
   image:
@@ -9,7 +9,7 @@ kubectl:
 
 pilot:
   hub: dtr.dev.cray.com/cray
-  tag: 1.7.8-cray1-distroless
+  tag: 1.6.13-cray1
 
 meshConfig:
   accessLogFile: /dev/stdout
@@ -31,7 +31,6 @@ istio:
 
   global:
     imagePullPolicy: IfNotPresent
-    priorityClassName: csm-high-priority-service
 
   sidecarInjectorWebhook:
     rewriteAppHTTPProbe: true
@@ -56,6 +55,10 @@ istio:
 
   prometheus:
     retention: 4h
+    security:
+      enabled: false
+
+  grafana:
     security:
       enabled: false
 

@@ -5,9 +5,9 @@ Istio configuration for the Cray system.
 This runs after cray-istio-deploy which creates the Istio CRDs that
 are used by this chart (Gateways, VirtualServices, etc.).
 
-Currently the Istio 1.7.8 istio-ingress chart is included as a subchart.
-In the Istio 1.7.8 release, this can be found in
-manifests/charts/gateways/istio-ingress.
+Currently the Istio 1.6.13 istio-ingress chart is included as a subchart.
+In the Istio 1.6.13 release, this can be found in
+manifests/charts/gateways/istio-ingress/.
 There are a few changes:
 
 1) The chart is renamed to `istio`. This allows our old values.yaml to continue
@@ -15,8 +15,6 @@ There are a few changes:
 
 2) Fixed issue in the upstream chart not actually using values for
    `gateways.*.externalIPs` in the gateway service.
-
-3) Changed _affinity.tpl to support setting the namespace for podAntiAffinity.
 
 In order to support deploying the hmn gateway in the same way we support the
 istio-ingressgateway, the `istio` subchart that was created using the
@@ -27,4 +25,27 @@ a few changes:
    `istio-ingressgateway`. Anything setting values for the hmn ingress must
    use ingressgatewayhmn:gateways:istio-ingressgateway-hmn.
 
-2) 2 & 3 from the istio-ingress chart above are made here, too.
+2) Fixed issue in the upstream chart not actually using values for
+  `gateways.*.externalIPs` in the gateway service.
+
+## Transfer encoding workaround
+
+Istio/envoy 1.5.4 and 1.6.13 have have a transfer encoding validation bug that
+breaks APIs that use 'chunked' encoding.  This is not yet fixed in 1.6.13, so
+this helm chart has a workaround that modifies a runtime setting by exec'ing
+into istio-proxy pods via a cronjob and modifies the runtime config.  See
+https://github.com/istio/istio/issues/23020 and
+https://github.com/envoyproxy/envoy/issues/10041 for more information.  Once
+we upgrade to a version of istio that contains this fix, we can remove the
+following from this chart:
+
+  - files/modify_runtime.sh
+  - templates/te-bug-workaround.yaml
+
+## tcp-stats-filter-1.6 memory leak
+
+Istio/envoy 1.6.13 has a bug where envoy leaks memory.
+The workaround is to have a CronJob that deletes the tcp-stats-filter-1.6.
+See https://github.com/istio/istio/issues/24720
+This is fixed in newer versions of istio (1.7+), so when we upgrade
+remove the workaround.

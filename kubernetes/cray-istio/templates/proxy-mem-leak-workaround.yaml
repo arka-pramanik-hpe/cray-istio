@@ -1,0 +1,55 @@
+{{- /*
+Copyright 2021 Hewlett Packard Enterprise Development LP
+*/ -}}
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: proxy-mem-leak-workaround
+  namespace: {{ .Release.Namespace }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: proxy-mem-leak-workaround
+rules:
+  - apiGroups: ["networking.istio.io"]
+    resources: [envoyfilters]
+    verbs: [delete]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: proxy-mem-leak-workaround
+subjects:
+  - kind: ServiceAccount
+    name: proxy-mem-leak-workaround
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: proxy-mem-leak-workaround
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: proxy-mem-leak-workaround
+  namespace: {{ .Release.Namespace }}
+spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  schedule: "0/10 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: "proxy-mem-leak-workaround"
+          containers:
+          - name: proxy-mem-leak-workaround
+            #
+            # Using common image that can do kubectl stuff
+            #
+            image: {{ include "cray-istio.image-prefix" . }}loftsman/docker-kubectl:0.2.0
+            command: [ '/bin/sh', '-c', 'kubectl delete envoyfilter -n istio-system tcp-stats-filter-1.6 || true' ]
