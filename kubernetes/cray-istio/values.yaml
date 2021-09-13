@@ -105,7 +105,7 @@ global:
   hub: dtr.dev.cray.com/cray
 
   # Default tag for Istio images.
-  tag: 1.7.8-cray1-distroless
+  tag: 1.7.8-cray2-distroless
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -600,7 +600,7 @@ global:
 
   # Settings for remote cluster.
   createRemoteSvcEndpoints: false
-  
+
   # configure remote pilot and istiod service and endpoint
   remotePolicyAddress: ""
   remotePilotAddress: ""
