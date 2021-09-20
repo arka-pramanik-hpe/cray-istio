@@ -1,0 +1,23 @@
+suite: test deployment
+templates:
+  - istiooperator.yaml
+tests:
+  - it: should work
+    asserts:
+      - isKind:
+          of: IstioOperator
+      - matchRegex:
+          path: metadata.name
+          pattern: cray-istio$
+      - equal:
+          path: spec.components.pilot.hub
+          value: dtr.dev.cray.com/cray
+      - equal:
+          path: spec.components.pilot.tag
+          value: 1.7.8-cray1-distroless
+      - equal:
+          path: spec.hub
+          value: dtr.dev.cray.com/cray
+      - equal:
+          path: spec.tag
+          value: 1.7.8-cray1-distroless

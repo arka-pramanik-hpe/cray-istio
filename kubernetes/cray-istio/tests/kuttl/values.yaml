@@ -1,0 +1,72 @@
+imagesHost: "arti.dev.cray.com"
+
+kubectl:
+  image:
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
+
+global:
+  priorityClassName: ""
+  hub: arti.dev.cray.com/csm-docker-stable-local
+  proxy:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
+
+  proxy_init:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
+
+  defaultResources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 128Mi
+
+  meshConfig:
+    enablePrometheusMerge: true
+
+deployments:
+  istio-ingressgateway:
+    autoscaleEnabled: ""
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
+  istio-ingressgateway-customer-admin:
+    autoscaleEnabled: ""
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
+  istio-ingressgateway-customer-user:
+    autoscaleEnabled: ""
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
+  istio-ingressgateway-hmn:
+    autoscaleEnabled: ""
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 128Mi

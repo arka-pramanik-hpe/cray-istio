@@ -1,0 +1,25 @@
+hub: arti.dev.cray.com/csm-docker-stable-local
+
+kubectl:
+  image:
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
+
+addonComponents:
+  prometheus:
+    k8s:
+      replicaCount: 1
+      resources:
+        requests:
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+pilot:
+  hub: arti.dev.cray.com/csm-docker-stable-local
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+istio:
+  global:
+    priorityClassName: ""

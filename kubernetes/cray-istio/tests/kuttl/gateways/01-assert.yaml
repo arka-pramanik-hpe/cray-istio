@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: hmn-gateway
+  namespace: services
+  annotations:
+    meta.helm.sh/release-name: cray-istio
+    meta.helm.sh/release-namespace: istio-system
+  labels:
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    istio: ingressgateway-hmn
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+  - hosts:
+    - '*'
+    port:
+      name: https-443
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: ingress-gateway-cert
+      mode: SIMPLE
+  - hosts:
+    - '*'
+    port:
+      name: cloudinit
+      number: 8888
+      protocol: HTTP

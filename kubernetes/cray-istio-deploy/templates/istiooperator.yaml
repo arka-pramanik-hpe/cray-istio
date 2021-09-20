@@ -12,6 +12,15 @@ spec:
   components:
     pilot:
       enabled: true
+      k8s:
+        resources:
+          requests:
+            {{- if .Values.pilot.resources.requests.cpu }}
+            cpu: {{ .Values.pilot.resources.requests.cpu }}
+            {{- end }}
+            {{- if .Values.pilot.resources.requests.memory }}
+            memory: {{ .Values.pilot.resources.requests.memory }}
+            {{- end }}
       hub: {{ .Values.pilot.hub }}
       tag: {{ .Values.pilot.tag }}
   addonComponents:

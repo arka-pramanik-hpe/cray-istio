@@ -1,0 +1,25 @@
+{{- if and .autoscaleEnabled .autoscaleMin .autoscaleMax }}
+{{- range $name, $options:= .Values.deployments }}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $name }}
+  namespace: {{ $options.namespace | default .Release.Namespace }}
+  labels:
+{{ .labels | toYaml | indent 4 }}
+    release: {{ $.Release.Name }}
+spec:
+  maxReplicas: {{ $options.autoscaleMax }}
+  minReplicas: {{ $options.autoscaleMin }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $name }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ $options.cpu.targetAverageUtilization }}
+{{- end }}
+{{- end }}

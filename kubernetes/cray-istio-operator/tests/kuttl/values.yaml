@@ -1,0 +1,9 @@
+---
+istio-operator:
+  hub: arti.dev.cray.com/csm-docker-stable-local
+  operator:
+    priorityClassName: ""
+
+kubectl:
+  image:
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman

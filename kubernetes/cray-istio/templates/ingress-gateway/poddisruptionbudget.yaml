@@ -1,0 +1,18 @@
+{{- if .Values.global.defaultPodDisruptionBudget.enabled }}
+{{- range $name, $options:= .Values.deployments }}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
+  labels:
+{{ .labels | toYaml | trim | indent 4 }}
+    release: {{ $.Release.Name }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+{{ .labels | toYaml | trim | indent 6 }}
+{{- end }}
+{{- end }}
