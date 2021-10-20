@@ -64,11 +64,7 @@ istio:
         ISTIO_META_IDLE_TIMEOUT: 10m
 
   tracing:
-    enabled: true
-    provider: jaeger
-    jaeger:
-      memory:
-        max_traces: 50000
+    enabled: false
 
   pilot:
     env:

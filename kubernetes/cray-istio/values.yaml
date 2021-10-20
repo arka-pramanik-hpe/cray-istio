@@ -715,7 +715,7 @@ global:
   policyCheckFailOpen: false
 
   # EnableTracing sets the value with same name in istio config map, requires pilot restart to take effect.
-  enableTracing: true
+  enableTracing: false
 
   # Configuration for each of the supported tracers
   tracer:
@@ -1062,7 +1062,7 @@ authn:
       peerauthentication: ingressgateway
 
 tracing:
-  enabled: true
+  enabled: false
 
 security:
   enabled: true
@@ -1085,12 +1085,7 @@ istio:
     externalAuthority: grafana-istio.local
 
   tracing:
-    enabled: true
-    provider: jaeger
-    jaeger:
-      memory:
-        max_traces: 50000
-    externalAuthority: jaeger-istio.local
+    enabled: false
 
   pilot:
     env:
