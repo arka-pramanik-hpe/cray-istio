@@ -44,8 +44,6 @@ spec:
       hub: {{ .Values.pilot.hub }}
       tag: {{ .Values.pilot.tag }}
   addonComponents:
-    tracing:
-      enabled: true
   values:
     global:
 {{ toYaml .Values.istio.global | indent 6 }}
