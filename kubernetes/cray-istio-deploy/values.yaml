@@ -17,8 +17,8 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 ---
-hub: dtr.dev.cray.com/cray
-tag: 1.7.8-cray2-distroless
+hub: artifactory.algol60.net/csm-docker/stable/istio
+tag: 1.8.6-cray1-distroless
 
 kubectl:
   image:
@@ -26,8 +26,8 @@ kubectl:
     tag: 0.5.1
 
 pilot:
-  hub: dtr.dev.cray.com/cray
-  tag: 1.7.8-cray2-distroless
+  hub: artifactory.algol60.net/csm-docker/stable/istio
+  tag: 1.8.6-cray1-distroless
   resources:
     requests:
       cpu:

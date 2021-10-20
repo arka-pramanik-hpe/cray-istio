@@ -52,32 +52,35 @@ roleRef:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: cray-istio-deploy-wait-kiali-cleanup
+  name: cray-istio-deploy-cleanup-addons
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: cray-istio-deploy-wait-kiali-cleanup
+  name: cray-istio-deploy-cleanup-addons
 rules:
 - apiGroups: [""]
   resources: ["configmaps", "serviceaccounts", "services"]
-  verbs: ["list", "get"]
+  verbs: ["list", "delete"]
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs: ["list", "get"]
+  verbs: ["list", "delete"]
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["clusterrolebindings", "clusterroles"]
-  verbs: ["list", "get"]
+  verbs: ["list", "delete"]
+- apiGroups: ["security.istio.io"]
+  resources: ["peerauthentications"]
+  verbs: ["list", "delete"]
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cray-istio-deploy-wait-kiali-cleanup
+  name: cray-istio-deploy-cleanup-addons
 subjects:
 - kind: ServiceAccount
-  name: cray-istio-deploy-wait-kiali-cleanup
+  name: cray-istio-deploy-cleanup-addons
   namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cray-istio-deploy-wait-kiali-cleanup
+  name: cray-istio-deploy-cleanup-addons

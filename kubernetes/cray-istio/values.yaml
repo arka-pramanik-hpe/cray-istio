@@ -515,12 +515,12 @@ global:
 
   # Default hub for Istio images.
   # Releases are published to docker hub under 'istio' project,
-  # build from our istio fork to the cray project in dtr.
+  # build from our istio fork to the cray project in algol60 artifactory.
   # Dev builds from prow are on gcr.io
-  hub: dtr.dev.cray.com/cray
+  hub: artifactory.algol60.net/csm-docker/stable/istio
 
   # Default tag for Istio images.
-  tag: 1.7.8-cray2-distroless
+  tag: 1.8.6-cray1-distroless
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components

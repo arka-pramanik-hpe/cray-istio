@@ -1,6 +1,6 @@
 istio-operator:
-  hub: dtr.dev.cray.com/cray
-  tag: 1.7.8-cray2-distroless
+  hub: artifactory.algol60.net/csm-docker/stable/istio
+  tag: 1.8.6-cray1-distroless
 
 kubectl:
   image:

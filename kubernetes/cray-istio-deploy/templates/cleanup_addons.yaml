@@ -22,7 +22,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: cray-istio-deploy-wait-kiali-cleanup
+  name: cray-istio-deploy-cleanup-addons
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
@@ -31,20 +31,20 @@ metadata:
 spec:
   template:
     metadata:
-      name: cray-istio-deploy-wait-kiali-cleanup
+      name: cray-istio-deploy-cleanup-addons
       labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
       annotations:
         sidecar.istio.io/inject: "false"
     spec:
       restartPolicy: Never
-      serviceAccountName: cray-istio-deploy-wait-kiali-cleanup
+      serviceAccountName: cray-istio-deploy-cleanup-addons
       containers:
-        - name: cleanup-kiali
+        - name: cleanup-addons
           image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
           command:
             - '/bin/sh'
           args:
             - '-c'
             - |-
-              {{- .Files.Get "files/wait_kiali_cleanup.sh" | nindent 14 }}
+              {{- .Files.Get "files/cleanup_addons.sh" | nindent 14 }}
