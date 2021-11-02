@@ -47,5 +47,3 @@ spec:
   values:
     global:
 {{ toYaml .Values.istio.global | indent 6 }}
-    grafana:
-{{ toYaml .Values.istio.grafana | indent 6 }}
