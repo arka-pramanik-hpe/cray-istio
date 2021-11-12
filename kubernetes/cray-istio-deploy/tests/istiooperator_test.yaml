@@ -11,13 +11,13 @@ tests:
           pattern: cray-istio$
       - equal:
           path: spec.components.pilot.hub
-          value: dtr.dev.cray.com/cray
+          value: artifactory.algol60.net/csm-docker/stable/istio
       - equal:
           path: spec.components.pilot.tag
-          value: 1.7.8-cray1-distroless
+          value: 1.8.6-cray1-distroless
       - equal:
           path: spec.hub
-          value: dtr.dev.cray.com/cray
+          value: artifactory.algol60.net/csm-docker/stable/istio
       - equal:
           path: spec.tag
-          value: 1.7.8-cray1-distroless
+          value: 1.8.6-cray1-distroless
