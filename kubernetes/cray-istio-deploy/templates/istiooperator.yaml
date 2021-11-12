@@ -33,6 +33,9 @@ spec:
     pilot:
       enabled: true
       k8s:
+        env:
+        - name: ENABLE_LEGACY_FSGROUP_INJECTION
+          value: "false"
         resources:
           requests:
             {{- if .Values.pilot.resources.requests.cpu }}
