@@ -574,11 +574,11 @@ global:
     # Configure envoy gRPC access log service.
     envoyAccessLogService:
       enabled: false
-      host: # example: accesslog-service.istio-system
-      port: # example: 15000
+      host:  # example: accesslog-service.istio-system
+      port:  # example: 15000
       tlsSettings:
-        mode: DISABLE # DISABLE, SIMPLE, MUTUAL, ISTIO_MUTUAL
-        clientCertificate: # example: /etc/istio/als/cert-chain.pem
+        mode: DISABLE  # DISABLE, SIMPLE, MUTUAL, ISTIO_MUTUAL
+        clientCertificate:  # example: /etc/istio/als/cert-chain.pem
         privateKey:        # example: /etc/istio/als/key.pem
         caCertificates:    # example: /etc/istio/als/root-cert.pem
         sni:               # example: als.somedomain
@@ -650,8 +650,8 @@ global:
     envoyStatsd:
       # If enabled is set to true, host and port must also be provided. Istio no longer provides a statsd collector.
       enabled: false
-      host: # example: statsd-svc.istio-system
-      port: # example: 9125
+      host:  # example: statsd-svc.istio-system
+      port:  # example: 9125
 
     # Sets the Envoy Metrics Service address, used to push Envoy metrics to an external collector
     # via the Metrics Service gRPC API. This contains detailed stats information emitted directly
@@ -664,11 +664,11 @@ global:
     # Disabled by default.
     envoyMetricsService:
       enabled: false
-      host: # example: metrics-service.istio-system
-      port: # example: 15000
+      host:  # example: metrics-service.istio-system
+      port:  # example: 15000
       tlsSettings:
-        mode: DISABLE # DISABLE, SIMPLE, MUTUAL, ISTIO_MUTUAL
-        clientCertificate: # example: /etc/istio/ms/cert-chain.pem
+        mode: DISABLE  # DISABLE, SIMPLE, MUTUAL, ISTIO_MUTUAL
+        clientCertificate:  # example: /etc/istio/ms/cert-chain.pem
         privateKey:        # example: /etc/istio/ms/key.pem
         caCertificates:    # example: /etc/istio/ms/root-cert.pem
         sni:               # example: ms.somedomain
@@ -802,9 +802,9 @@ global:
   # set of DNS settings than the normal application pods (e.g., in
   # multicluster scenarios).
   # NOTE: If using templates, follow the pattern in the commented example below.
-  #podDNSSearchNamespaces:
-  #- global
-  #- "{{ valueOrDefault .DeploymentMeta.Namespace \"default\" }}.global"
+  # podDNSSearchNamespaces:
+  # - global
+  # - "{{ valueOrDefault .DeploymentMeta.Namespace \"default\" }}.global"
 
   # If set to true, the pilot and citadel mtls will be exposed on the
   # ingress gateway
@@ -1048,8 +1048,8 @@ global:
       proxyMetadata: {}
       tracing:
         tlsSettings:
-          mode: DISABLE # DISABLE, SIMPLE, MUTUAL, ISTIO_MUTUAL
-          clientCertificate: # example: /etc/istio/tracer/cert-chain.pem
+          mode: DISABLE  # DISABLE, SIMPLE, MUTUAL, ISTIO_MUTUAL
+          clientCertificate:  # example: /etc/istio/tracer/cert-chain.pem
           privateKey:        # example: /etc/istio/tracer/key.pem
           caCertificates:    # example: /etc/istio/tracer/root-cert.pem
           sni:               # example: tracer.somedomain
