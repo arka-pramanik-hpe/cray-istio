@@ -16,6 +16,5 @@ jobs:
         validate-maintainers: false
       scan-chart-snyk-args: "--severity-threshold=high --policy-path=kubernetes/.snyk"
       test-charts: false
-      scan-images: false
     secrets:
       snyk-token: ${{ secrets.SNYK_TOKEN }}
