@@ -22,7 +22,7 @@ tag: 1.8.6-cray1-distroless
 
 kubectl:
   image:
-    repository: dtr.dev.cray.com/loftsman/loftsman
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
     tag: 0.5.1
 
 pilot:
