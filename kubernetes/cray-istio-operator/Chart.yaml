@@ -10,7 +10,7 @@ sources:
   - https://github.com/Cray-HPE/cray-istio
 dependencies:
   - name: istio-operator
-    Version: 1.7.0
+    version: 1.7.0
 maintainers:
   - name: brantk-hpe
 appVersion: 1.8.6

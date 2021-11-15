@@ -11,9 +11,4 @@ maintainers:
   - name: brantk-hpe
 appVersion: 1.8.6
 annotations:
-  artifacthub.io/images: |
-    - name: proxyv2
-      image: artifactory.algol60.net/csm-docker/stable/istio/proxyv2:1.8.6-cray1-distroless
-    - name: loftsman
-      image: arti.dev.cray.com/csm-docker-stable-local/loftsman:0.5.1
   artifacthub.io/license: MIT
