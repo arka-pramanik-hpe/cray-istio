@@ -1,12 +1,15 @@
-apiVersion: v1
-name: istio-operator
-version: 1.7.0
-tillerVersion: ">=2.7.2"
+apiVersion: v2
+version: 1.23.1
+name: cray-istio-operator
 description: Helm chart for deploying Istio operator
 keywords:
   - istio
   - operator
+home: https://github.com/Cray-HPE/cray-istio
 sources:
-  - https://github.com/istio/istio/tree/master/operator
-engine: gotpl
-icon: https://istio.io/latest/favicons/android-192x192.png
+  - https://github.com/Cray-HPE/cray-istio
+maintainers:
+  - name: brantk-hpe
+appVersion: 1.8.6
+annotations:
+  artifacthub.io/license: MIT

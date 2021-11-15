@@ -1,4 +1,4 @@
-hub: arti.dev.cray.com/csm-docker-stable-local
+hub: artifactory.algol60.net/csm-docker/stable
 
 kubectl:
   image:
@@ -14,7 +14,7 @@ addonComponents:
         limits:
           memory: 128Mi
 pilot:
-  hub: arti.dev.cray.com/csm-docker-stable-local
+  hub: artifactory.algol60.net/csm-docker/stable/istio
   resources:
     requests:
       cpu: 100m

@@ -1,6 +1,6 @@
 ---
 istio-operator:
-  hub: arti.dev.cray.com/csm-docker-stable-local
+  hub: artifactory.algol60.net/csm-docker/stable
   operator:
     priorityClassName: ""
 
