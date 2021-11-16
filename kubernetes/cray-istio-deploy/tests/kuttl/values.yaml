@@ -2,7 +2,7 @@ hub: artifactory.algol60.net/csm-docker/stable
 
 kubectl:
   image:
-    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
+    repository: artifactory.algol60.net/csm-docker/stable/docker-kubectl
 
 addonComponents:
   prometheus:

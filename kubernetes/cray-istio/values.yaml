@@ -21,8 +21,8 @@
 # Declare variables to be passed into your templates.
 kubectl:
   image:
-    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
-    tag: 0.5.1
+    repository: artifactory.algol60.net/csm-docker/stable/docker-kubectl
+    tag: 1.19.15
 
 certificate:
   commonName: "*.vshasta.io"
