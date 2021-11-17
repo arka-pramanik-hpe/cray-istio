@@ -1,12 +1,10 @@
-imagesHost: "arti.dev.cray.com"
-
 kubectl:
   image:
-    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
+    repository: artifactory.algol60.net/csm-docker/stable/docker-kubectl
 
 global:
   priorityClassName: ""
-  hub: arti.dev.cray.com/csm-docker-stable-local
+  hub: artifactory.algol60.net/csm-docker/stable
   proxy:
     resources:
       requests:
