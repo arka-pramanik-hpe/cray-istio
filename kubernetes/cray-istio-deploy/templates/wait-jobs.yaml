@@ -55,4 +55,4 @@ spec:
             - '/bin/sh'
           args:
             - '-c'
-            - '/usr/local/bin/wait-for-pods istiod'
+            - 'kubectl rollout status deployment -n istio-system istiod --timeout=15m'
