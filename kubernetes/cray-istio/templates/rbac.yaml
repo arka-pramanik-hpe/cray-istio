@@ -9,8 +9,8 @@ kind: ClusterRole
 metadata:
   name: cray-istio-jobs-role
 rules:
-- apiGroups: [""]
-  resources: ["pods"]
+- apiGroups: ["", "apps"]
+  resources: ["pods", "deployments"]
   verbs: ["get", "list"]
 ---
 kind: ClusterRoleBinding

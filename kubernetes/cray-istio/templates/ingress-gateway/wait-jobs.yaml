@@ -27,5 +27,5 @@ spec:
             - '/bin/sh'
           args:
             - '-c'
-            - '/usr/local/bin/wait-for-pods {{ $name }}'
+            - 'kubectl rollout status deployment -n istio-system {{ $name }} --timeout=15m'
 {{- end }}
