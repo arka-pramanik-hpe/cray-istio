@@ -1,11 +1,11 @@
-{{- if and .autoscaleEnabled .autoscaleMin .autoscaleMax }}
 {{- range $name, $options:= .Values.deployments }}
+{{- if and $options.autoscaleEnabled $options.autoscaleMin $options.autoscaleMax }}
 ---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ $name }}
-  namespace: {{ $options.namespace | default .Release.Namespace }}
+  namespace: {{ $options.namespace | default $.Release.Namespace }}
   labels:
 {{ .labels | toYaml | indent 4 }}
     release: {{ $.Release.Name }}
