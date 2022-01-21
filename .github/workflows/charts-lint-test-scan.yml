@@ -9,6 +9,7 @@ jobs:
   lint-test-scan:
     uses: Cray-HPE/.github/.github/workflows/charts-lint-test-scan.yml@main
     with:
+      scan-images: false  # https://snyk.io/vuln/SNYK-DEBIAN11-GLIBC-1296898 has no fix available.
       scan-image-snyk-args: "--severity-threshold=high"
       lint-charts: ${{ github.event_name == 'pull_request' }}
       ct-config: |

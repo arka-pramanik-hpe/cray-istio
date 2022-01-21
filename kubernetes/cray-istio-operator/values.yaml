@@ -1,6 +1,6 @@
 istio-operator:
   hub: artifactory.algol60.net/csm-docker/stable/istio
-  tag: 1.8.6-cray1-distroless
+  tag: 1.8.6-cray2-distroless  # Also update the annotation in Chart.yaml
 
 kubectl:
   image:

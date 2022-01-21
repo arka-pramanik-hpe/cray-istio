@@ -1,5 +1,5 @@
 apiVersion: v2
-version: 2.4.3
+version: 2.4.4
 name: cray-istio
 description: Cray Istio for cluster service mesh including service gateway/sidecars, monitoring etc.
 keywords:
