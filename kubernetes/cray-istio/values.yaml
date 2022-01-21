@@ -196,7 +196,7 @@ deployments:
     enabled: true
     labels:
       app: istio-ingressgateway-hmn
-      istio: ingressgateway-hmn
+      istio: istio-ingressgateway-hmn
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
@@ -295,7 +295,7 @@ gateways:
   hmn-gateway:
     namespace: services
     selector:
-      istio: ingressgateway-hmn
+      istio: istio-ingressgateway-hmn
     labels:
       app: istio-ingressgateway
       gateway: hmn-gateway
@@ -411,10 +411,10 @@ services:
     gateway: istio-ingressgateway-hmn
     selectors:
       app: istio-ingressgateway-hmn
-      istio: ingressgateway-hmn
+      istio: istio-ingressgateway-hmn
     labels:
       app: istio-ingressgateway-hmn
-      istio: ingressgateway-hmn
+      istio: istio-ingressgateway-hmn
       peerauthentication: ingressgateway
     externalTrafficPolicy: "Cluster"
     type: LoadBalancer
