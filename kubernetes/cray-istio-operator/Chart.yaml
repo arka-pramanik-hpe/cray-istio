@@ -22,7 +22,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 apiVersion: v2
-version: 1.23.2
+version: 1.24.0
 name: cray-istio-operator
 description: Helm chart for deploying Istio operator
 keywords:
@@ -35,10 +35,10 @@ dependencies:
   - name: istio-operator
     version: 1.7.0
 maintainers:
-  - name: brantk-hpe
-appVersion: 1.8.6
+  - name: bo-quan
+appVersion: 1.9.9
 annotations:
   artifacthub.io/images: |
     - name: istio-operator-distro
-      image: artifactory.algol60.net/csm-docker/stable/istio/operator:1.8.6-cray2
+      image: artifactory.algol60.net/csm-docker/stable/istio/operator:1.9.9-cray1
   artifacthub.io/license: MIT
