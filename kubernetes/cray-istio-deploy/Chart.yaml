@@ -22,7 +22,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 apiVersion: v2
-version: 1.26.3
+version: 1.27.0
 name: cray-istio-deploy
 description: Creates the IstioOperator instance that deploys the Istio control plane.
 keywords:
@@ -31,16 +31,16 @@ home: https://github.com/Cray-HPE/cray-istio
 sources:
   - https://github.com/Cray-HPE/cray-istio
 maintainers:
-  - name: brantk-hpe
-appVersion: 1.8.6
+  - name: bo-quan
+appVersion: 1.9.9
 annotations:
   artifacthub.io/license: MIT
   artifacthub.io/images: |
     - name: istio-pilot-distro
-      image: artifactory.algol60.net/csm-docker/stable/istio/pilot:1.8.6-cray2-distroless
+      image: artifactory.algol60.net/csm-docker/stable/istio/pilot:1.9.9-cray1-distroless
     - name: istio-pilot-distroless
-      image: artifactory.algol60.net/csm-docker/stable/istio/pilot:1.8.6-cray2
+      image: artifactory.algol60.net/csm-docker/stable/istio/pilot:1.9.9-cray1
     - name: istio-proxy-distro
-      image: artifactory.algol60.net/csm-docker/stable/istio/proxyv2:1.8.6-cray2-distroless
+      image: artifactory.algol60.net/csm-docker/stable/istio/proxyv2:1.9.9-cray1-distroless
     - name: istio-proxy-distroless
-      image: artifactory.algol60.net/csm-docker/stable/istio/proxyv2:1.8.6-cray2
+      image: artifactory.algol60.net/csm-docker/stable/istio/proxyv2:1.9.9-cray1
