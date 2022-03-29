@@ -39,6 +39,8 @@ maintainers:
 appVersion: 1.9.9
 annotations:
   artifacthub.io/images: |
+    - name: istio-operator-distroless
+      image: artifactory.algol60.net/csm-docker/stable/istio/operator:1.9.9-cray1-distroless
     - name: istio-operator-distro
       image: artifactory.algol60.net/csm-docker/stable/istio/operator:1.9.9-cray1
   artifacthub.io/license: MIT
