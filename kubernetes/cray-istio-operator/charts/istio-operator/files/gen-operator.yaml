@@ -215,6 +215,6 @@ spec:
             - name: OPERATOR_NAME
               value: "istio-operator"
             - name: WAIT_FOR_RESOURCES_TIMEOUT
-              value: "600s"
+              value: "300s"
             - name: REVISION
               value: ""
