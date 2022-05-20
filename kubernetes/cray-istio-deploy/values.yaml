@@ -40,6 +40,8 @@ pilot:
 
 meshConfig:
   accessLogFile: /dev/stdout
+  defaultConfig:
+    holdApplicationUntilProxyStarts: true
 
 istio:
 
