@@ -99,15 +99,6 @@ spec:
           - podAffinityTerm:
               labelSelector:
                 matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - istio-ingressgateway
-              topologyKey: kubernetes.io/hostname
-            weight: 100
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
                 - key: app.kubernetes.io/name
                   operator: In
                   values:
@@ -127,6 +118,14 @@ spec:
               - services
               topologyKey: kubernetes.io/hostname
             weight: 100
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - istio-ingressgateway
+              topologyKey: kubernetes.io/hostname
       containers:
       - args:
         - proxy

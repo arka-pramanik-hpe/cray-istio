@@ -341,8 +341,10 @@ spec:
       {{- end }}
       affinity:
       {{- include "nodeaffinity" (dict "global" $.Values.global "nodeSelector" $options.nodeSelector) | indent 6 }}
-        {{- if $options.podAffinityTerm }}
+        {{- if or $options.podAffinityTerm $options.podAntiAffinity }}
         podAntiAffinity:
+        {{- end }}
+          {{- if $options.podAffinityTerm }}
           preferredDuringSchedulingIgnoredDuringExecution:
             {{- range $k, $v := $options.podAffinityTerm }}
             - podAffinityTerm:
@@ -361,26 +363,22 @@ spec:
                 {{- end }}
               weight: {{ $v.weight | default 100 }}
                     {{- end }}
-            {{- end }}
-        {{- if $options.podAntiAffinity }}
-        podAntiAffinity:
+          {{- end }}
+          {{- if $options.podAntiAffinity }}
           requiredDuringSchedulingIgnoredDuringExecution:
+            {{- range $k, $v := $options.podAntiAffinity }}
             - labelSelector:
                 matchExpressions:
-                  {{- range $k, $v := $options.podAntiAffinity }}
                   - key: {{ $v.key }}
                     operator: {{ $v.operator }}
                     values:
                       {{- $vals := split "," $v.values }}
-                      {{- range $i, $item := $vals }}
-                      - {{ $item | quote }}
+                      {{- range $i, $v := $vals }}
+                      - {{ $v | quote }}
                       {{- end }}
-                    topologyKey: {{ $v.topologyKey | default "kubernetes.io/hostname" }}
-              {{- if $v.namespaces }}
-              namespaces: {{ $v.namespaces }}
-              {{- end }}
-                {{- end }}
-        {{- end }}
+              topologyKey: {{ $v.topologyKey | default "kubernetes.io/hostname" }}
+            {{- end }}
+         {{- end }}
 {{- if $options.tolerations }}
       tolerations:
 {{ toYaml $options.tolerations | indent 6 }}
