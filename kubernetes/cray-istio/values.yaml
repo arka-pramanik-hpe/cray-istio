@@ -67,11 +67,6 @@ deployments:
       name: tls-spire
     - port: 8888
       name: cloudinit
-    podAntiAffinity:
-    - key: app
-      operator: In
-      values: istio-ingressgateway
-      topologyKey: "kubernetes.io/hostname"
     podAffinityTerm:
     - key: app.kubernetes.io/name
       operator: In
@@ -115,11 +110,6 @@ deployments:
       limits:
         cpu: "20"
         memory: 1024Mi
-    podAntiAffinity:
-    - key: app
-      operator: In
-      values: istio-ingressgateway-customer-admin
-      topologyKey: "kubernetes.io/hostname"
     podAffinityTerm:
     - key: app.kubernetes.io/name
       operator: In
@@ -157,11 +147,6 @@ deployments:
     autoscaleEnabled: true
     autoscaleMin: 3
     autoscaleMax: 6
-    podAntiAffinity:
-    - key: app
-      operator: In
-      values: istio-ingressgateway-customer-user
-      topologyKey: "kubernetes.io/hostname"
     podAffinityTerm:
     - key: app.kubernetes.io/name
       operator: In
@@ -210,11 +195,6 @@ deployments:
     autoscaleMax: 6
     rollingMaxSurge: 100%
     rollingMaxUnavailable: 25%
-    podAntiAffinity:
-    - key: app
-      operator: In
-      values: istio-ingressgateway-hmn
-      topologyKey: "kubernetes.io/hostname"
     podAffinityTerm:
     - key: app.kubernetes.io/name
       operator: In

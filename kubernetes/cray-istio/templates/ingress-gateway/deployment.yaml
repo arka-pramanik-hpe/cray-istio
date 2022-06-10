@@ -1,5 +1,6 @@
 {{ $network := .Values.global.network }}
 {{- range $name, $options := .Values.deployments }}
+{{ $uuid := uuidv4 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,6 +32,7 @@ spec:
   template:
     metadata:
       labels:
+        deployment/uuid: {{ $uuid }}
 {{ $options.labels | toYaml | indent 8 }}
 {{- if eq $.Release.Namespace "istio-system"}}
         release: istio
@@ -364,8 +366,15 @@ spec:
               weight: {{ $v.weight | default 100 }}
                     {{- end }}
           {{- end }}
-          {{- if $options.podAntiAffinity }}
           requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: deployment/uuid
+                    operator: In
+                    values:
+                      - {{ $uuid }}
+              topologyKey: kubernetes.io/hostname
+          {{- if $options.podAntiAffinity }}
             {{- range $k, $v := $options.podAntiAffinity }}
             - labelSelector:
                 matchExpressions:
