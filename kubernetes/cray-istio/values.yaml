@@ -524,6 +524,10 @@ global:
   istiod:
     enabled: true
     enableAnalysis: false
+    autoscaleEnabled: true
+    autoscaleMin: 3
+    autoscaleMax: 6
+    replicaCount: 3
 
   # One central istiod controls all remote clusters: disabled by default
   centralIstiod: false
@@ -1077,10 +1081,6 @@ istio:
     enabled: false
 
   pilot:
-    autoscaleEnabled: true
-    autoscaleMin: 3
-    autoscaleMax: 6
-    replicaCount: 3
     env:
       USE_ISTIO_JWT_FILTER: "true"
       PILOT_ENABLE_UNSAFE_REGEX: "true"
