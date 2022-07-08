@@ -524,10 +524,6 @@ global:
   istiod:
     enabled: true
     enableAnalysis: false
-    autoscaleEnabled: true
-    autoscaleMin: 3
-    autoscaleMax: 6
-    replicaCount: 3
 
   # One central istiod controls all remote clusters: disabled by default
   centralIstiod: false
