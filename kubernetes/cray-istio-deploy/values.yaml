@@ -33,10 +33,6 @@ kubectl:
 pilot:
   hub: artifactory.algol60.net/csm-docker/stable/istio
   tag: 1.9.9-cray1-distroless   # Also update the pilot annotations in Chart.yaml
-  autoscaleEnabled: true
-  autoscaleMin: 3
-  autoscaleMax: 10
-  replicaCount: 3
   resources:
     requests:
       cpu:
