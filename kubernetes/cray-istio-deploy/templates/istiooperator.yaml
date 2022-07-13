@@ -40,6 +40,8 @@ spec:
         env:
         - name: ENABLE_LEGACY_FSGROUP_INJECTION
           value: "false"
+        # Recommended to be >1 in production
+        replicaCount: 3
         resources:
           requests:
             {{- if .Values.pilot.resources.requests.cpu }}
@@ -48,6 +50,13 @@ spec:
             {{- if .Values.pilot.resources.requests.memory }}
             memory: {{ .Values.pilot.resources.requests.memory }}
             {{- end }}
+        strategy:
+          rollingUpdate:
+            maxSurge: 100%
+            maxUnavailable: 1
+        hpaSpec:
+          maxReplicas: 8
+          minReplicas: 3
       hub: {{ .Values.pilot.hub }}
       tag: {{ .Values.pilot.tag }}
   addonComponents:
