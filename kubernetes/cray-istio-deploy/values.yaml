@@ -23,7 +23,7 @@
 #
 ---
 hub: artifactory.algol60.net/csm-docker/stable/istio
-tag: 1.9.9-cray1-distroless   # Also update the proxyv2 annotations in Chart.yaml
+tag: 1.10.6-cray1-distroless   # Also update the proxyv2 annotations in Chart.yaml
 
 kubectl:
   image:
@@ -32,7 +32,7 @@ kubectl:
 
 pilot:
   hub: artifactory.algol60.net/csm-docker/stable/istio
-  tag: 1.9.9-cray1-distroless   # Also update the pilot annotations in Chart.yaml
+  tag: 1.10.6-cray1-distroless   # Also update the pilot annotations in Chart.yaml
   resources:
     requests:
       cpu:
