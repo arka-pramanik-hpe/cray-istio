@@ -37,13 +37,13 @@ spec:
   externalTrafficPolicy: Local
   ports:
   - name: http2
-    port: 80
+    port: 8080
     protocol: TCP
-    targetPort: 80
+    targetPort: 8080
   - name: https
-    port: 443
+    port: 8443
     protocol: TCP
-    targetPort: 443
+    targetPort: 8443
   - name: tls-spire
     port: 8081
     protocol: TCP

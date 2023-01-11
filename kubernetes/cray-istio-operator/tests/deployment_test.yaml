@@ -34,4 +34,4 @@ tests:
           pattern: istio-operator$
       - equal:
           path: spec.template.spec.containers[0].image
-          value: artifactory.algol60.net/csm-docker/stable/istio/operator:1.10.6-cray1-distroless
+          value: artifactory.algol60.net/csm-docker/stable/istio/operator:1.11.8-cray1-distroless

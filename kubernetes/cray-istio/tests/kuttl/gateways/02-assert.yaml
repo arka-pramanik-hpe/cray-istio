@@ -39,13 +39,13 @@ spec:
     - '*'
     port:
       name: http
-      number: 80
+      number: 8080
       protocol: HTTP
   - hosts:
     - '*'
     port:
-      name: https-443
-      number: 443
+      name: https-8443
+      number: 8443
       protocol: HTTPS
     tls:
       credentialName: ingress-gateway-cert
