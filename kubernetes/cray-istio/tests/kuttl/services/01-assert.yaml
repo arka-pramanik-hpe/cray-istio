@@ -38,11 +38,11 @@ spec:
   externalTrafficPolicy: Cluster
   ports:
   - name: http2
-    port: 8080
+    port: 80
     protocol: TCP
     targetPort: 8080
   - name: https
-    port: 8443
+    port: 443
     protocol: TCP
     targetPort: 8443
   selector:

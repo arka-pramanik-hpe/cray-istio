@@ -63,10 +63,14 @@ istio:
       autoscaleMin: 2
       autoscaleMax: 5
       ports:
-      - port: 8080
+      - port: 80
         name: http2
-      - port: 8443
+        protocol: TCP
+        targetPort: 8080
+      - port: 443
         name: https
+        protocol: TCP
+        targetPort: 8443
       env:
         ISTIO_META_IDLE_TIMEOUT: 10m
 

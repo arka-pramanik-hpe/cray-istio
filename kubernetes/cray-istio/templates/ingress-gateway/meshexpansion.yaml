@@ -50,7 +50,7 @@ spec:
     - destination:
         host: istiod.{{ .Release.Namespace }}.svc.{{ .Values.global.proxy.clusterDomain }}
         port:
-          number: 8443
+          number: 443
 ---
 
 apiVersion: networking.istio.io/v1alpha3

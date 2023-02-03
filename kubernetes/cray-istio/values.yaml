@@ -59,10 +59,12 @@ deployments:
       targetAverageUtilization: 80
     applicationPorts: "80"
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
     - port: 8081
       name: tls-spire
     - port: 8888
@@ -124,10 +126,12 @@ deployments:
     cpu:
       targetAverageUtilization: 80
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
@@ -170,10 +174,12 @@ deployments:
     cpu:
       targetAverageUtilization: 80
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
       ISTIO_META_IDLE_TIMEOUT: 10m
@@ -231,10 +237,12 @@ deployments:
       mountPath: /etc/istio/ingressgateway-ca-certs
     applicationPorts: "80"
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
     - port: 8888
       name: cloudinit
     env:
@@ -254,15 +262,15 @@ gateways:
         - '*'
         port:
           name: http
-          number: 8080
+          number: 80
           protocol: HTTP
         tls:
           httpsRedirect: true
       - hosts:
         - '*'
         port:
-          name: https-8443
-          number: 8443
+          name: https-443
+          number: 443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -293,13 +301,12 @@ gateways:
         - '*'
         port:
           name: http
-          number: 8080
-          protocol: HTTP
+          number: 80
       - hosts:
         - '*'
         port:
-          name: https-8443
-          number: 8443
+          name: https-443
+          number: 443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -322,13 +329,13 @@ gateways:
         - '*'
         port:
           name: http
-          number: 8080
+          number: 80
           protocol: HTTP
       - hosts:
         - '*'
         port:
-          name: https-8443
-          number: 8443
+          name: https-443
+          number: 443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -345,13 +352,13 @@ gateways:
         - '*'
         port:
           name: http
-          number: 8080
+          number: 80
           protocol: HTTP
       - hosts:
         - '*'
         port:
-          name: https-8443
-          number: 8443
+          name: https-443
+          number: 443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -369,10 +376,12 @@ services:
     externalTrafficPolicy: "Cluster"
     type: LoadBalancer
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
     - port: 8081
       name: tls-spire
     - port: 8888
@@ -388,10 +397,12 @@ services:
     externalTrafficPolicy: "Local"
     type: LoadBalancer
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
     - port: 8081
       name: tls-spire
     - port: 8888
@@ -411,10 +422,12 @@ services:
       metallb.universe.tf/address-pool: hardware-management
       external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
     - port: 8888
       name: cloudinit
   istio-ingressgateway-can:
@@ -431,10 +444,12 @@ services:
       metallb.universe.tf/address-pool: customer-high-speed
       external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
   istio-ingressgateway-chn:
     selectors:
       app: istio-ingressgateway-customer-user
@@ -448,10 +463,12 @@ services:
       metallb.universe.tf/address-pool: customer-high-speed
     externalTrafficPolicy: "Cluster"
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
   istio-ingressgateway-cmn:
     selectors:
       app: istio-ingressgateway
@@ -465,10 +482,12 @@ services:
       metallb.universe.tf/address-pool: customer-access
     externalTrafficPolicy: "Cluster"
     ports:
-    - port: 8080
+    - port: 80
       name: http2
-    - port: 8443
+      targetPort: 8080
+    - port: 443
       name: https
+      targetPort: 8443
 
 servicesGateway:
   tls: true
@@ -480,7 +499,7 @@ servicesGateway:
     hosts:
       - "*"
   # Note: This is only needed to provide an HTTP only port with no redirects.
-  # Once cloud-init can use HTTPS, remove this port (8888) and use port 8443.
+  # Once cloud-init can use HTTPS, remove this port (8888) and use port 443.
   cloudinit:
     enabled: true
     hosts:
