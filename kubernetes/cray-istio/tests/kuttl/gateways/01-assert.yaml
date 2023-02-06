@@ -44,7 +44,7 @@ spec:
   - hosts:
     - '*'
     port:
-      name: https-8443
+      name: https
       number: 8443
       protocol: HTTPS
     tls:
