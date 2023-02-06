@@ -302,6 +302,7 @@ gateways:
         port:
           name: http
           number: 80
+          protocol: HTTP
       - hosts:
         - '*'
         port:
