@@ -59,9 +59,9 @@ deployments:
       targetAverageUtilization: 80
     applicationPorts: "80"
     ports:
-    - port: 80
+    - port: 8080
       name: http2
-    - port: 443
+    - port: 8443
       name: https
     - port: 8081
       name: tls-spire
@@ -124,9 +124,9 @@ deployments:
     cpu:
       targetAverageUtilization: 80
     ports:
-    - port: 80
+    - port: 8080
       name: http2
-    - port: 443
+    - port: 8443
       name: https
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
@@ -170,9 +170,9 @@ deployments:
     cpu:
       targetAverageUtilization: 80
     ports:
-    - port: 80
+    - port: 8080
       name: http2
-    - port: 443
+    - port: 8443
       name: https
     env:
       ISTIO_META_ROUTER_MODE: "sni-dnat"
@@ -231,9 +231,9 @@ deployments:
       mountPath: /etc/istio/ingressgateway-ca-certs
     applicationPorts: "80"
     ports:
-    - port: 80
+    - port: 8080
       name: http2
-    - port: 443
+    - port: 8443
       name: https
     - port: 8888
       name: cloudinit
@@ -254,15 +254,15 @@ gateways:
         - '*'
         port:
           name: http
-          number: 80
+          number: 8080
           protocol: HTTP
         tls:
           httpsRedirect: true
       - hosts:
         - '*'
         port:
-          name: https-443
-          number: 443
+          name: https
+          number: 8443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -293,13 +293,13 @@ gateways:
         - '*'
         port:
           name: http
-          number: 80
+          number: 8080
           protocol: HTTP
       - hosts:
         - '*'
         port:
-          name: https-443
-          number: 443
+          name: https
+          number: 8443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -322,13 +322,13 @@ gateways:
         - '*'
         port:
           name: http
-          number: 80
+          number: 8080
           protocol: HTTP
       - hosts:
         - '*'
         port:
-          name: https-443
-          number: 443
+          name: https
+          number: 8443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -345,13 +345,13 @@ gateways:
         - '*'
         port:
           name: http
-          number: 80
+          number: 8080
           protocol: HTTP
       - hosts:
         - '*'
         port:
-          name: https-443
-          number: 443
+          name: https
+          number: 8443
           protocol: HTTPS
         tls:
           credentialName: ingress-gateway-cert
@@ -370,9 +370,13 @@ services:
     type: LoadBalancer
     ports:
     - port: 80
+      targetPort: 8080
       name: http2
+      protocol: TCP
     - port: 443
+      targetPort: 8443
       name: https
+      protocol: TCP
     - port: 8081
       name: tls-spire
     - port: 8888
@@ -389,9 +393,13 @@ services:
     type: LoadBalancer
     ports:
     - port: 80
+      targetPort: 8080
       name: http2
+      protocol: TCP
     - port: 443
+      targetPort: 8443
       name: https
+      protocol: TCP
     - port: 8081
       name: tls-spire
     - port: 8888
@@ -412,9 +420,13 @@ services:
       external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     ports:
     - port: 80
+      targetPort: 8080
       name: http2
+      protocol: TCP
     - port: 443
+      targetPort: 8443
       name: https
+      protocol: TCP
     - port: 8888
       name: cloudinit
   istio-ingressgateway-can:
@@ -432,9 +444,13 @@ services:
       external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
     ports:
     - port: 80
+      targetPort: 8080
       name: http2
+      protocol: TCP
     - port: 443
+      targetPort: 8443
       name: https
+      protocol: TCP
   istio-ingressgateway-chn:
     selectors:
       app: istio-ingressgateway-customer-user
@@ -449,9 +465,13 @@ services:
     externalTrafficPolicy: "Cluster"
     ports:
     - port: 80
+      targetPort: 8080
       name: http2
+      protocol: TCP
     - port: 443
+      targetPort: 8443
       name: https
+      protocol: TCP
   istio-ingressgateway-cmn:
     selectors:
       app: istio-ingressgateway
@@ -466,9 +486,13 @@ services:
     externalTrafficPolicy: "Cluster"
     ports:
     - port: 80
+      targetPort: 8080
       name: http2
+      protocol: TCP
     - port: 443
+      targetPort: 8443
       name: https
+      protocol: TCP
 
 servicesGateway:
   tls: true
@@ -509,7 +533,7 @@ global:
   hub: artifactory.algol60.net/csm-docker/stable/istio
 
   # Default tag for Istio images.
-  tag: 1.10.6-cray1-distroless
+  tag: 1.11.8-cray1-distroless
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components

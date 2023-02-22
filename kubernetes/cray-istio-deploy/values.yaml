@@ -23,7 +23,7 @@
 #
 ---
 hub: artifactory.algol60.net/csm-docker/stable/istio
-tag: 1.10.6-cray1-distroless   # Also update the proxyv2 annotations in Chart.yaml
+tag: 1.11.8-cray1-distroless   # Also update the proxyv2 annotations in Chart.yaml
 
 kubectl:
   image:
@@ -32,7 +32,7 @@ kubectl:
 
 pilot:
   hub: artifactory.algol60.net/csm-docker/stable/istio
-  tag: 1.10.6-cray1-distroless   # Also update the pilot annotations in Chart.yaml
+  tag: 1.11.8-cray1-distroless   # Also update the pilot annotations in Chart.yaml
   resources:
     requests:
       cpu:
@@ -63,9 +63,9 @@ istio:
       autoscaleMin: 2
       autoscaleMax: 5
       ports:
-      - port: 80
+      - port: 8080
         name: http2
-      - port: 443
+      - port: 8443
         name: https
       env:
         ISTIO_META_IDLE_TIMEOUT: 10m
