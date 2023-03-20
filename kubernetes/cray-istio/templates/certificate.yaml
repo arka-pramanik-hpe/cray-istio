@@ -1,7 +1,7 @@
 {{/*
 MIT License
 
-(C) Copyright 2022 Hewlett Packard Enterprise Development LP
+(C) Copyright 2022-2023 Hewlett Packard Enterprise Development LP
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -22,6 +22,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */}}
 {{- if and .Values.servicesGateway.tls }}
+---
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
@@ -36,6 +37,27 @@ spec:
   renewBefore: 480h
   dnsNames:
 {{- range .Values.certificate.dnsNames }}
+     - "{{ . }}"
+{{- end }}
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: dvs-mqtt-cert
+spec:
+  secretName: {{ .Values.mqttCertificate.secretName }}
+  issuerRef:
+    kind: Issuer
+    name: cert-manager-issuer-common
+  commonName: "{{ .Values.mqttCertificate.commonName }}"
+  duration: 8760h
+  renewBefore: 72h
+  dnsNames:
+{{- range .Values.mqttCertificate.dnsNames }}
+     - "{{ . }}"
+{{- end }}
+  ipAddresses:
+{{- range .Values.mqttCertificate.ipAddresses }}
      - "{{ . }}"
 {{- end }}
 {{- end }}
