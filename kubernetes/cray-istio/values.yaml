@@ -1,7 +1,7 @@
 #
 # MIT License
 #
-# (C) Copyright 2021-2022 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2021-2021 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -35,6 +35,15 @@ certificate:
     - "*.vshasta.io"
   secretName: ingress-gateway-cert
 
+mqttCertificate:
+  commonName: "dvs-mqtt.local"
+  dnsNames:
+    - "dvs-mqtt.local"
+  ipAddresses:
+    - "10.92.100.71"
+    - "10.92.100.81"
+  secretName: dvs-mqtt-cert
+
 deployments:
   istio-ingressgateway:
     labels:
@@ -65,6 +74,8 @@ deployments:
       name: https
     - port: 8081
       name: tls-spire
+    - port: 8883
+      name: mqtt-secure
     - port: 8888
       name: cloudinit
     podAffinityTerm:
@@ -278,6 +289,15 @@ gateways:
       - hosts:
         - '*'
         port:
+          number: 8883
+          name: mqtt-secure
+          protocol: TLS
+        tls:
+          mode: SIMPLE
+          credentialName: dvs-mqtt-cert
+      - hosts:
+        - '*'
+        port:
           name: cloudinit
           number: 8888
           protocol: HTTP
@@ -375,6 +395,8 @@ services:
       name: https
     - port: 8081
       name: tls-spire
+    - port: 8883
+      name: mqtt-secure
     - port: 8888
       name: cloudinit
   istio-ingressgateway-local:
@@ -394,6 +416,8 @@ services:
       name: https
     - port: 8081
       name: tls-spire
+    - port: 8883
+      name: mqtt-secure
     - port: 8888
       name: cloudinit
   istio-ingressgateway-hmn:
