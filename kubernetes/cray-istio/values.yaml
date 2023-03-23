@@ -36,13 +36,13 @@ certificate:
   secretName: ingress-gateway-cert
 
 mqttCertificate:
-    commonName: "dvs-mqtt.local"
-    dnsNames:
-      - "dvs-mqtt.local"
-    ipAddresses:
-      - "10.92.100.71"
-      - "10.92.100.81"
-    secretName: dvs-mqtt-cert
+  commonName: "dvs-mqtt.local"
+  dnsNames:
+    - "dvs-mqtt.local"
+  ipAddresses:
+    - "10.92.100.71"
+    - "10.92.100.81"
+  secretName: dvs-mqtt-cert
 
 deployments:
   istio-ingressgateway:
