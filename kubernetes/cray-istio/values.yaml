@@ -498,11 +498,11 @@ services:
       protocol: TCP
   istio-ingressgateway-cmn:
     selectors:
-      app: istio-ingressgateway
-      istio: ingressgateway
+      app: istio-ingressgateway-customer-admin
+      istio: ingressgateway-customer-admin
     labels:
-      app: istio-ingressgateway
-      istio: ingressgateway
+      app: istio-ingressgateway-customer-admin
+      istio: ingressgateway-customer-admin
       peerauthentication: ingressgateway
     type: LoadBalancer
     serviceAnnotations:
