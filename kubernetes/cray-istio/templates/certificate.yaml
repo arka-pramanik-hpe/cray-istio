@@ -23,7 +23,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */}}
 {{- if and .Values.servicesGateway.tls }}
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ingress-gateway-cert
@@ -40,7 +40,7 @@ spec:
      - "{{ . }}"
 {{- end }}
 ---
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: dvs-mqtt-cert
