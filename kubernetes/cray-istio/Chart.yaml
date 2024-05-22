@@ -32,6 +32,6 @@ sources:
   - https://github.com/Cray-HPE/cray-istio
 maintainers:
   - name: bo-quan
-appVersion: 1.11.8
+appVersion: 1.19.10
 annotations:
   artifacthub.io/license: MIT
