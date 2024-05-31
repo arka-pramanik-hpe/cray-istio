@@ -189,7 +189,7 @@ spec:
               value: sni-dnat
             - name: ISTIO_META_CLUSTER_ID
               value: Kubernetes
-          image: artifactory.algol60.net/csm-docker/stable/istio/proxyv2:1.11.8-cray1-distroless
+          image: artifactory.algol60.net/csm-docker/stable/istio/proxyv2:1.19.10-cray1-distroless
           imagePullPolicy: IfNotPresent
           name: istio-proxy
           ports:

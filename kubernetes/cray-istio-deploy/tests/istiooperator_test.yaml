@@ -37,10 +37,10 @@ tests:
           value: artifactory.algol60.net/csm-docker/stable/istio
       - equal:
           path: spec.components.pilot.tag
-          value: 1.11.8-cray1-distroless
+          value: 1.19.10-cray1-distroless
       - equal:
           path: spec.hub
           value: artifactory.algol60.net/csm-docker/stable/istio
       - equal:
           path: spec.tag
-          value: 1.11.8-cray1-distroless
+          value: 1.19.10-cray1-distroless
