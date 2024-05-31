@@ -17,6 +17,9 @@ enableCRDTemplates: false
 # revision for the operator resources
 revision: ""
 
+# The number of old ReplicaSets to retain in operator deployment
+deploymentHistory: 10
+
 # Operator resource defaults
 operator:
   priorityClassName: csm-high-priority-service
