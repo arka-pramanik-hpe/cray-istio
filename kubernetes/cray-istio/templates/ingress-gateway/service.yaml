@@ -1,54 +1,47 @@
-{{- range $name, $options:= .Values.services }}
-{{- if not $options.customService }}
----
+{{ $gateway := index .Values "gateways" "istio-ingressgateway" }}
+{{- if not $gateway.customService }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $name }}
-  namespace: {{ $options.namespace | default $.Release.Namespace }}
+  name: {{ $gateway.name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
-    {{- range $key, $val := $options.serviceAnnotations }}
+    {{- range $key, $val := $gateway.serviceAnnotations }}
     {{ $key }}: {{ $val | quote }}
     {{- end }}
   labels:
-{{ $options.labels | toYaml | indent 4 }}
-    release: {{ $.Release.Name }}
+{{ $gateway.labels | toYaml | indent 4 }}
+    release: {{ .Release.Name }}
+    istio.io/rev: {{ .Values.revision | default "default" }}
+    install.operator.istio.io/owning-resource: {{ .Values.ownerName | default "unknown" }}
+    operator.istio.io/component: "IngressGateways"
 spec:
-{{- if $options.loadBalancerIP }}
-  loadBalancerIP: "{{ $options.loadBalancerIP }}"
+{{- if $gateway.loadBalancerIP }}
+  loadBalancerIP: "{{ $gateway.loadBalancerIP }}"
 {{- end }}
-{{- if $options.loadBalancerSourceRanges }}
+{{- if $gateway.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
-{{ toYaml $options.loadBalancerSourceRanges | indent 4 }}
+{{ toYaml $gateway.loadBalancerSourceRanges | indent 4 }}
 {{- end }}
-{{- if $options.externalIPs }}
-  externalIPs:
-{{ toYaml $options.externalIPs | indent 4 }}
+{{- if $gateway.externalTrafficPolicy }}
+  externalTrafficPolicy: {{$gateway.externalTrafficPolicy }}
 {{- end }}
-{{- if $options.externalTrafficPolicy }}
-  externalTrafficPolicy: {{ $options.externalTrafficPolicy }}
-{{- end }}
-  type: {{ $options.type }}
+  type: {{ $gateway.type }}
   selector:
-{{ $options.selectors | toYaml | indent 4 }}
+{{ $gateway.labels | toYaml | indent 4 }}
   ports:
-    {{- range $key, $val := $options.ports }}
+
+    {{- range $key, $val := $gateway.ports }}
     -
       {{- range $pkey, $pval := $val }}
       {{ $pkey}}: {{ $pval }}
       {{- end }}
     {{- end }}
-    {{- if $.Values.global.meshExpansion.enabled }}
-    {{- range $key, $val := $options.meshExpansionPorts }}
+
+  {{ range $app := $gateway.ingressPorts }}
     -
-      {{- range $pkey, $pval := $val }}
-      {{ $pkey}}: {{ $pval }}
-      {{- end }}
-    {{- end }}
-    {{- end }}
-  {{ range $app := $options.ingressPorts }}
-    - port: {{ $app.port }}
+      port: {{ $app.port }}
       name: {{ $app.name }}
   {{- end }}
-{{- end }}
-{{- end }}
+---
+{{ end }}

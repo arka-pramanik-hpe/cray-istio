@@ -1,14 +1,16 @@
-{{- range $name, $options:= .Values.deployments }}
----
+{{ $gateway := index .Values "gateways" "istio-ingressgateway" }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ $name }}-sds
-  namespace: {{ $options.namespace | default $.Release.Namespace }}
+  name: {{ $gateway.name }}-sds
+  namespace: {{ .Release.Namespace }}
   labels:
-    release: {{ $.Release.Name }}
+    release: {{ .Release.Name }}
+    istio.io/rev: {{ .Values.revision | default "default" }}
+    install.operator.istio.io/owning-resource: {{ .Values.ownerName | default "unknown" }}
+    operator.istio.io/component: "IngressGateways"
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "watch", "list"]
-{{- end }}
+---
