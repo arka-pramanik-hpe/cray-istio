@@ -232,7 +232,7 @@ spec:
           {{- end }}
           {{- range $key, $val := $options.env }}
           - name: {{ $key }}
-            value: {{ $val }}
+            value: "{{ $val }}"
           {{- end }}
           {{- range $key, $value := $.Values.global.meshConfig.defaultConfig.proxyMetadata }}
           - name: {{ $key }}
