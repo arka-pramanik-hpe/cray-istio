@@ -533,6 +533,10 @@ servicesGateway:
     enabled: true
     hosts:
       - "*"
+
+# For Helm compatibility.
+ownerName: ""
+
 global:
   authGateway: services/services-gateway
   # Used to locate istio-pilot.
