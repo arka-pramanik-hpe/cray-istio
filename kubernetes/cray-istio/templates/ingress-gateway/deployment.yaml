@@ -246,6 +246,10 @@ spec:
 {{ end }}
           - name: ISTIO_META_CLUSTER_ID
             value: "{{ $.Values.global.multiCluster.clusterName | default `Kubernetes` }}"
+          - name: ISTIO_META_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
           volumeMounts:
           - name: istio-envoy
             mountPath: /etc/istio/proxy
