@@ -232,7 +232,6 @@ deployments:
     serviceAnnotations:
       metallb.universe.tf/address-pool: hardware-management
       external-dns.alpha.kubernetes.io/hostname: shasta.local,auth.local
-    meshExpansionPorts: []
     secretVolumes:
     - name: ingressgateway-certs
       secretName: istio-ingressgateway-certs
@@ -843,14 +842,6 @@ global:
   # podDNSSearchNamespaces:
   # - global
   # - "{{ valueOrDefault .DeploymentMeta.Namespace \"default\" }}.global"
-
-  # If set to true, the pilot and citadel mtls will be exposed on the
-  # ingress gateway
-  meshExpansion:
-    enabled: false
-    # If set to true, the pilot and citadel mtls and the plain text pilot ports
-    # will be exposed on an internal gateway
-    useILB: false
 
   multiCluster:
     # Set to true to connect two kubernetes clusters via their respective
