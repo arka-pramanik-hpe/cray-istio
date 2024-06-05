@@ -809,10 +809,7 @@ global:
   #   1 - Least preferred
   #   2 - No preference
   #   3 - Most preferred
-  arch:
-    amd64: 2
-    s390x: 2
-    ppc64le: 2
+  arch: {}
 
   # Whether to restrict the applications namespace the controller manages;
   # If not set, controller watches all namespaces
