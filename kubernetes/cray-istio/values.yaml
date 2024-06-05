@@ -891,13 +891,8 @@ global:
   # Use the Mesh Control Protocol (MCP) for configuring Mixer and Pilot. Requires an MCP source.
   useMCP: false
 
-  # The trust domain corresponds to the trust root of a system
-  # Refer to https://github.com/spiffe/spiffe/blob/master/standards/SPIFFE-ID.md#21-trust-domain
-  # Indicate the domain used in SPIFFE identity URL
-  # The default depends on the environment.
-  #   kubernetes: cluster.local
-  #   else:  default dns domain
-  trustDomain: "cluster.local"
+#  Deprecated, use meshConfig.trustDomain
+#  trustDomain: ""
 
   #  The trust domain aliases represent the aliases of trust_domain.
   #  For example, if we have
@@ -1082,6 +1077,11 @@ global:
 
   meshConfig:
     enablePrometheusMerge: false
+
+    # The trust domain corresponds to the trust root of a system
+    # Refer to https://github.com/spiffe/spiffe/blob/master/standards/SPIFFE-ID.md#21-trust-domain
+    trustDomain: "cluster.local"
+
     defaultConfig:
       proxyMetadata: {}
       tracing:

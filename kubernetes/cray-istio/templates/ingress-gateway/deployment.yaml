@@ -226,9 +226,13 @@ spec:
           {{- if $.Values.global.meshID }}
           - name: ISTIO_META_MESH_ID
             value: "{{ $.Values.global.meshID }}"
-          {{- else if $.Values.global.trustDomain }}
+          {{- else if $.Values.global.meshConfig.trustDomain }}
           - name: ISTIO_META_MESH_ID
-            value: "{{ $.Values.global.trustDomain }}"
+            value: "{{ $.Values.global.meshConfig.trustDomain }}"
+          {{- end }}
+          {{- if $.Values.global.meshConfig.trustDomain }}
+          - name: TRUST_DOMAIN
+            value: "{{ $.Values.global.meshConfig.trustDomain }}"
           {{- end }}
           {{- range $key, $val := $options.env }}
           - name: {{ $key }}
