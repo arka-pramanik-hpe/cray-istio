@@ -109,11 +109,6 @@ spec:
             {{- range $key, $val := $options.ports }}
             - containerPort: {{ $val.targetPort | default $val.port }}
             {{- end }}
-            {{- if $.Values.global.meshExpansion.enabled }}
-            {{- range $key, $val := .meshExpansionPorts }}
-            - containerPort: {{ $val.targetPort | default $val.port }}
-            {{- end }}
-            {{- end }}
             - containerPort: 15090
               protocol: TCP
               name: http-envoy-prom
