@@ -2,6 +2,8 @@
 {{- range $name, $options := .Values.deployments }}
 {{ $uuid := uuidv4 }}
 ---
+{{- $gateway := index $.Values "gateways" "istio-ingressgateway" }}
+{{- if eq $gateway.injectionTemplate "" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -50,6 +52,7 @@ spec:
         istio.io/rev: {{ $.Values.revision | default "default" }}
         install.operator.istio.io/owning-resource: {{ $.Values.ownerName | default "unknown" }}
         operator.istio.io/component: "IngressGateways"
+        sidecar.istio.io/inject: "false"
       annotations:
         istio.io/rev: {{ $.Values.revision | default "default" }}
         {{- if $.Values.global.meshConfig.enablePrometheusMerge }}
@@ -420,5 +423,6 @@ spec:
 {{- else if $.Values.global.defaultTolerations }}
       tolerations:
 {{ toYaml $.Values.global.defaultTolerations | indent 6 }}
+{{- end }}
 {{- end }}
 {{- end }}
